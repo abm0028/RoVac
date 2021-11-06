@@ -24,7 +24,7 @@ public class ObjectPlacement : MonoBehaviour {
 
     public Button wallButton, floorButton, chestButton, saveButton, loadButton;
 
-    string path = @"example.txt";
+    string path = @"default.txt";
 
     // Start is called before the first frame update
     void Start() {
