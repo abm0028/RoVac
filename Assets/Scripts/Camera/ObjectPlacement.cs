@@ -13,18 +13,19 @@ public class ObjectPlacement : MonoBehaviour {
     private bool chestActive = false;
     private bool wallActive = true;
     private bool floorActive = false;
+    private bool deleteActive = true;
     int rotationDirection = 1;
     Quaternion rotationAngle = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-
-    Stack chestCollection = new Stack();
-    Stack wallCollection = new Stack();
-    Stack floorCollection = new Stack();
+    List<GameObject> chestCollection = new List<GameObject>();
+    List<GameObject> wallCollection = new List<GameObject>();
+    List<GameObject> floorCollection = new List<GameObject>();
 
     Vector3 worldPoint = Vector3.zero;
 
     public Button wallButton, floorButton, chestButton, saveButton, loadButton;
 
-    string path = @"default.txt";
+     string path = @"default.txt";
+    //string path = @"test.txt";
 
     // Start is called before the first frame update
     void Start() {
@@ -38,7 +39,6 @@ public class ObjectPlacement : MonoBehaviour {
     }
 
     void rotateObjects() {
-        Debug.Log(rotationDirection);
         if (rotationDirection == 4) {
             rotationDirection = 1;
         }
@@ -74,9 +74,12 @@ public class ObjectPlacement : MonoBehaviour {
         if (wallActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
-                WallMouse.transform.position = wallSnapPosition(worldPoint);
-                if (Input.GetMouseButtonDown(0)) {
-                    wallCollection.Push(Instantiate(Wall, wallSnapPosition(getWorldPoint()), rotationAngle));
+                WallMouse.transform.position = snapPosition(worldPoint, 1.5f);
+                if (Input.GetMouseButton(0)) {
+                    if (validPlace("Plane")) {
+                       wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
+                       //Debug.Log("Wall count: " + wallCollection.Count);
+                    }
                 }
             }
 
@@ -85,9 +88,12 @@ public class ObjectPlacement : MonoBehaviour {
         if (floorActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
-                FloorMouse.transform.position = floorsnapPosition(getWorldPoint());
-                if (Input.GetMouseButtonDown(0)) {
-                    floorCollection.Push(Instantiate(Floor, floorsnapPosition(getWorldPoint()), rotationAngle));
+                FloorMouse.transform.position = snapPosition(getWorldPoint(), 0.5f);
+                if (Input.GetMouseButton(0)) {
+                    if (validPlace("Plane")) {
+                        floorCollection.Add(Instantiate(Floor, snapPosition(getWorldPoint(), 0.5f), rotationAngle));
+                        //Debug.Log("floor count: " + floorCollection.Count);
+                    }
                 }
             }
         }
@@ -95,33 +101,25 @@ public class ObjectPlacement : MonoBehaviour {
         if (chestActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
-                ChestMouse.transform.position = chestSnapPosition(getWorldPoint());
+                ChestMouse.transform.position = snapPosition(getWorldPoint(), 1.5f);
                 ChestMouse.transform.rotation = rotationAngle;
-                if (Input.GetMouseButtonDown(0)) {
-                    chestCollection.Push(Instantiate(Chest, chestSnapPosition(getWorldPoint()), rotationAngle));
+                if (Input.GetMouseButton(0)) {
+                    if (validPlace("Floor")) {
+                        chestCollection.Add(Instantiate(Chest, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
+                        //Debug.Log("Chest count: " + chestCollection.Count);
+                    }
                 }
             }
 
         }
 
+        if (deleteActive) {
+            getWorldPointDelete();
+        }
+
     }
 
     void objectKeyboardListener() {
-        if (Input.GetKeyUp(KeyCode.W)) {
-            resetObjectPositions();
-            disableAll();
-            wallActive = true;
-        }
-        if (Input.GetKeyUp(KeyCode.C)) {
-            resetObjectPositions();
-            disableAll();
-            chestActive = true;
-        }
-        if (Input.GetKeyUp(KeyCode.F)) {
-            resetObjectPositions();
-            disableAll();
-            floorActive = true;
-        }
         if (Input.GetKeyUp(KeyCode.R)) {
             rotateObjects();
         }
@@ -136,37 +134,51 @@ public class ObjectPlacement : MonoBehaviour {
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit)) {
-            //Debug.Log(hit.collider.name);
-            //if (hit.collider.name == "Plane") {//
-              return hit.point;
-            //}
-            //else {
-             //   return Vector3.zero;
-           //}
+            return hit.point;
         }
         return Vector3.zero;
     }
 
-    public Vector3 floorsnapPosition(Vector3 original) {
-        Vector3 snapped;
-        snapped.x = Mathf.Floor(original.x + 0.5f);
-        snapped.y = 0.5f;
-        snapped.z = Mathf.Floor(original.z + 0.5f);
-        return snapped;
+    public void getWorldPointDelete() {
+
+        Camera cam = GetComponent<Camera>();
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Input.GetMouseButton(1)) {
+            if (Physics.Raycast(ray, out hit)) {
+                GameObject delObject = hit.collider.gameObject;
+                if (delObject.name != "Plane") {
+                    GameObject temp = delObject;
+                    Destroy(delObject);
+                    deleteObjectFromList(floorCollection, temp);
+
+                }
+            }
+        }
+
     }
 
-    public Vector3 wallSnapPosition(Vector3 original) {
-        Vector3 snapped;
-        snapped.x = Mathf.Floor(original.x + 0.5f);
-        snapped.y = 1.5f;
-        snapped.z = Mathf.Floor(original.z + 0.5f);
-        return snapped;
+    bool validPlace(String validObject) {
+        Camera cam = GetComponent<Camera>();
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit)) {
+            String hitObject = hit.collider.gameObject.name.Replace("Prefab(Clone)", "");
+            if (hitObject == validObject) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
-    public Vector3 chestSnapPosition(Vector3 original) {
+    public Vector3 snapPosition(Vector3 original,float yOffset) {
         Vector3 snapped;
         snapped.x = Mathf.Floor(original.x + 0.5f);
-        snapped.y = 1.5f;
+        snapped.y = yOffset;
         snapped.z = Mathf.Floor(original.z + 0.5f);
         return snapped;
     }
@@ -179,8 +191,84 @@ public class ObjectPlacement : MonoBehaviour {
 
     void resetObjectPositions() {
         WallMouse.transform.position = new Vector3(10, -10, 10);
-        ChestMouse.transform.position = new Vector3(0, -10, 0);
-        FloorMouse.transform.position = new Vector3(5, -10, 5);
+        ChestMouse.transform.position = new Vector3(10, -10, 10);
+        FloorMouse.transform.position = new Vector3(10, -10, 10);
+    }
+
+
+
+    void deleteObjectFromList(List<GameObject> list, GameObject delObj ) {
+        int index = 0;
+        bool isFound = false;
+        while (index < list.Count || isFound) {
+            if(list[index] == delObj) {
+                isFound = true;
+                list.RemoveAt(index);
+            }
+            index++;
+        }
+    }
+
+    void appendObjectToFile(List<GameObject> list, String name) {
+
+        foreach (GameObject currentObjct in list) {
+            using (StreamWriter sw = File.AppendText(path)) {
+
+                Vector3 pos = currentObjct.transform.position;
+                Vector3 rot = currentObjct.transform.rotation.eulerAngles;
+                sw.WriteLine(name + ", " + pos.x + ", " + pos.y + ", " + pos.z + ", " + rot.x + ", " + rot.y + ", " + rot.z);
+            }
+        }
+    }
+
+    void readFile() {
+
+        eraseObjects(floorCollection);
+        eraseObjects(wallCollection);
+        eraseObjects(chestCollection);
+
+        using (StreamReader sr = File.OpenText(path)) {
+            while (!sr.EndOfStream) {
+                String line = sr.ReadLine();
+                String[] splitLine = line.Split(',');
+                String name = splitLine[0];
+                Vector3 position = new Vector3(float.Parse(splitLine[1]), float.Parse(splitLine[2]), float.Parse(splitLine[3]));
+                Vector3 rotation = new Vector3(float.Parse(splitLine[4]), float.Parse(splitLine[5]), float.Parse(splitLine[6]));
+                switch (name) {
+                    case "Floor":
+                        floorCollection.Add(Instantiate(Floor, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Wall":
+                        wallCollection.Add(Instantiate(Wall, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Chest":
+                        chestCollection.Add(Instantiate(Chest, position, Quaternion.Euler(rotation)));
+                        break;
+                    default:
+                        Debug.Log("Tried to load " + name + "and was not found!");
+                        break;
+                    
+                }
+            }
+            sr.Close();
+        }
+    }
+
+    void eraseObjects(List<GameObject> list) {
+        foreach (GameObject currentObject in list) {
+            Destroy(currentObject);
+        }
+        list.Clear();
+    }
+
+    void createFile() {
+        using (StreamWriter sw = File.CreateText(path)) {
+            sw.Close();
+        }
+    }
+
+    void loadAction() {
+        readFile();
     }
 
     void wallAction() {
@@ -208,162 +296,5 @@ public class ObjectPlacement : MonoBehaviour {
         appendObjectToFile(floorCollection, "Floor");
         appendObjectToFile(wallCollection, "Wall");
         appendObjectToFile(chestCollection, "Chest");
-
-        /* 
-        foreach (GameObject floor in floorCollection) {
-            Vector3 fObjPos = floor.transform.position;
-            Vector3 fObjRot = floor.transform.rotation.eulerAngles;
-            Debug.Log(fObjPos.x.ToString() + " " + fObjPos.y.ToString() + " " + fObjPos.z.ToString() + "   |   " + fObjRot.x.ToString() + " / " + fObjRot.y.ToString() + " / " + fObjRot.z.ToString());
-        }
-
-        foreach (GameObject chest in chestCollection) {
-            Vector3 fObjPos = chest.transform.position;
-            Vector3 fObjRot = chest.transform.rotation.eulerAngles;
-        }
-        */
     }
-
-    void appendObjectToFile(Stack stack, String name) {
-        // StreamWriter sw;
-        // File file;
-
-        foreach (GameObject currentObjct in stack) {
-            using (StreamWriter sw = File.AppendText(path)) {
-
-                Vector3 pos = currentObjct.transform.position;
-                Vector3 rot = currentObjct.transform.rotation.eulerAngles;
-                sw.WriteLine(name + ", " + pos.x + ", "  + pos.y + ", " + pos.z + ", " +  rot.x + ", " + rot.y + ", " + rot.z);
-                //sw.Close();
-            }
-        }
-    }
-
-    void readFile() {
-
-        eraseObjects(floorCollection);
-        eraseObjects(wallCollection);
-        eraseObjects(chestCollection);
-
-        using (StreamReader sr = File.OpenText(path)) {
-            while (!sr.EndOfStream) {
-                String line = sr.ReadLine();
-                Debug.Log(line);
-                String[] splitLine = line.Split(',');
-                Vector3 position = new Vector3(float.Parse(splitLine[1]), float.Parse(splitLine[2]), float.Parse(splitLine[3]));
-                Vector3 rotation = new Vector3(float.Parse(splitLine[4]), float.Parse(splitLine[5]), float.Parse(splitLine[6]));
-                if (splitLine[0] == "Floor") {
-                    floorCollection.Push(Instantiate(Floor, position, Quaternion.Euler(rotation)));
-                }
-                if (splitLine[0] == "Wall") {
-                    wallCollection.Push(Instantiate(Wall, position, Quaternion.Euler(rotation)));
-                }
-                if (splitLine[0] == "Chest") {
-                    chestCollection.Push(Instantiate(Chest, position, Quaternion.Euler(rotation)));
-                }
-            }
-            sr.Close();
-        }
-    }
-
-    void eraseObjects(Stack stack) {
-        foreach(GameObject currentObject in stack) {
-            Destroy(currentObject);
-        }
-        stack.Clear();
-    }
-
-    void createFile() {
-        using (StreamWriter sw = File.CreateText(path)) {
-            sw.Close();
-        }
-    }
-
-    void loadAction() {
-        readFile();
-    }
-
-    void resetStack(Stack s) {
-        s.Clear();
-    }
-
-    class SimData {
-
-        public Boolean fileExist = false;
-        public string globalPath = null;
-
-        /******************************************
-         * 
-         * Function tests to see if a file exists at the path inserted through the parameter (path)
-         * 
-        ******************************************/
-        public void clearOldFile() {
-            fileExist = false;
-        }
-
-        public void setGlobalPath(string path) {
-            globalPath = path;
-        }
-
-        public string createCSVDataLine(string objectname, float posX, float posY, float posZ, float rotX, float rotY, float rotZ) {
-            string dataLine = objectname + ", " + posX + ", " + posY + ", " + posZ + ", " + rotX + ", " + rotY + ", " + rotZ;
-            return dataLine;
-
-        }
-
-        public void writeCSV(string dataLine) {
-            if (!fileExist && globalPath != null) {
-                using (StreamWriter sw = File.CreateText(globalPath)) {
-                    sw.WriteLine(dataLine);
-                    sw.Close();
-                }
-                fileExist = true;
-            }
-            else if (fileExist && globalPath != null) {
-                using (StreamWriter sw = File.AppendText(globalPath)) {
-                    sw.WriteLine(dataLine);
-                    sw.Close();
-                }
-
-            }
-            else {
-            }
-        }
-
-        public List<RoomFormData> readCSV() {
-            List<RoomFormData> retList = new List<RoomFormData>();
-            using (StreamReader sr = File.OpenText(globalPath)) {
-                while (!sr.EndOfStream) {
-                    String line = sr.ReadLine();
-                    String[] splitLine = line.Split(',');
-                    RoomFormData dataObj = new RoomFormData(splitLine[0], float.Parse(splitLine[1]), float.Parse(splitLine[2]), float.Parse(splitLine[3]), float.Parse(splitLine[4]), float.Parse(splitLine[5]), float.Parse(splitLine[6]));
-                    retList.Add(dataObj);
-                }
-                sr.Close();
-            }
-            return retList;
-        }
-
-
-    }
-    class RoomFormData {
-        public string ObjectName { get; set; }
-        public float posX { get; set; }
-        public float posY { get; set; }
-        public float posZ { get; set; }
-        public float rotX { get; set; }
-        public float rotY { get; set; }
-        public float rotZ { get; set; }
-
-        public RoomFormData(string name, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot) {
-            this.ObjectName = name;
-            this.posX = xPos;
-            this.posY = yPos;
-            this.posZ = zPos;
-            this.rotX = xRot;
-            this.rotY = yRot;
-            this.rotZ = zRot;
-        }
-
-    }
-
 }

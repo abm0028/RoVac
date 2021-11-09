@@ -8,16 +8,22 @@ public class CameraMovement : MonoBehaviour {
     float rotateSpeed = 30.0f;
 
     void Update() {
-        if (Input.GetKey(KeyCode.RightArrow)) {
+        // Move Right
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
             transform.Translate(new Vector3(arrowSpeed * Time.deltaTime, 0, 0));
         }
-        if (Input.GetKey(KeyCode.LeftArrow)) {
+
+        // Move Left
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
             transform.Translate(new Vector3(-arrowSpeed * Time.deltaTime, 0, 0));
         }
-        if (Input.GetKey(KeyCode.DownArrow)) {
+
+        // Move Down
+        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
             transform.Translate(new Vector3(0, -arrowSpeed * Time.deltaTime, 0));
         }
-        if (Input.GetKey(KeyCode.UpArrow)) {
+        // Move Up
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
             transform.Translate(new Vector3(0, arrowSpeed * Time.deltaTime, 0));
         }
 
@@ -30,11 +36,13 @@ public class CameraMovement : MonoBehaviour {
             transform.Translate(new Vector3(0, 0, -wheelSpeed * Time.deltaTime));
         }
 
-        if (Input.GetKey(KeyCode.A)) {
+        // Rotate Camera left
+        if (Input.GetKey(KeyCode.Q)) {
             transform.Rotate(new Vector3(0, 0, rotateSpeed * Time.deltaTime));
         }
 
-        if (Input.GetKey(KeyCode.D)) {
+        // Rotate Camera right
+        if (Input.GetKey(KeyCode.E)) {
             transform.Rotate(new Vector3(0, 0, -rotateSpeed * Time.deltaTime));
         }
 
