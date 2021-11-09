@@ -158,10 +158,10 @@ public class RovacManager : MonoBehaviour {
         int choice = Random.Range(1, 3);
         int angle = Random.Range(35, 46);
         if (choice == 1) {
-            return start + 13;
+            return start + angle;
         }
         else {
-            return start - 13;
+            return start - angle;
         }
     }
 

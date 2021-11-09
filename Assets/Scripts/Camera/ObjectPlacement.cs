@@ -19,10 +19,11 @@ public class ObjectPlacement : MonoBehaviour {
     List<GameObject> chestCollection = new List<GameObject>();
     List<GameObject> wallCollection = new List<GameObject>();
     List<GameObject> floorCollection = new List<GameObject>();
+    Cleaning cleaningobject;
 
     Vector3 worldPoint = Vector3.zero;
 
-    public Button wallButton, floorButton, chestButton, saveButton, loadButton;
+    public Button wallButton, floorButton, chestButton, saveButton, loadButton, tableButton;
 
      string path = @"default.txt";
     //string path = @"test.txt";
@@ -297,4 +298,5 @@ public class ObjectPlacement : MonoBehaviour {
         appendObjectToFile(wallCollection, "Wall");
         appendObjectToFile(chestCollection, "Chest");
     }
+
 }

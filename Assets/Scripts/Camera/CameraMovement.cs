@@ -44,7 +44,6 @@ public class CameraMovement : MonoBehaviour {
         // Rotate Camera right
         if (Input.GetKey(KeyCode.E)) {
             transform.Rotate(new Vector3(0, 0, -rotateSpeed * Time.deltaTime));
-        }
-
+        } 
     }
 }
