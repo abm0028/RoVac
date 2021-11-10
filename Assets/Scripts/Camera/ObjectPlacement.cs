@@ -299,6 +299,4 @@ public class ObjectPlacement : MonoBehaviour {
         appendObjectToFile(chestCollection, "Chest");
     }
 
-    // time-start-of-run || algorithm || floorplan unique ID || cleaning PCT || vaccum running time || minutes left
-
 }
