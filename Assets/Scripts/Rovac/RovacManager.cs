@@ -1,3 +1,11 @@
+/*
+ * Class:          RovacManager
+ * Purpose:        This algorithm will handle all of the functionality of the roVac, which are instructions for each pathing algorthm, and changing the simulation speed.
+ * Authors:        Edson Jaramillo, Alec Mueller, Samuel Strong     
+ * Notes:          
+ * Date Created:   11/02/21
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,17 +18,12 @@ public class RovacManager : MonoBehaviour {
     bool allActive = true;
     bool snakingActive, wallfollowActive, spiralActive, randomActive = false;
     int algorithmChoice = 0;
-    bool canCollider = true;
+    bool canCollide = true;
 
+    // Declaration and initialization of variables used in simulation and vacuum speed calculation
     float baseSpeed = 10.0f;
     int simulationSpeed = 1;
     float vaccumSpeed;
-
-    //spiral algo variables
-    int direction = 1;
-    int framecounter = 0;
-    int framegoal_1x = 315;
-    int incrementStep_1x = 315;
 
     int framegoal_50x = 6;
     int incrementStep_50x = 6;
@@ -28,10 +31,16 @@ public class RovacManager : MonoBehaviour {
     int framegoal_100x = 3;
     int incrementStep_100x = 3;
 
+    // Declaration and initialization of variables used in the roVac pathing algorithms
+    int direction = 1;
+    int framecounter = 0;
+    int framegoal_1x = 315;
+    int incrementStep_1x = 315;
+
     int turnIndex = 1;
     int turnGoal = 2;
 
-    //random algo variables
+    // Variables specific to the random algorithm
     int numberOfRays = 17;
     public float angle = 90;
     public float rayRange = 0.65f;
@@ -39,7 +48,9 @@ public class RovacManager : MonoBehaviour {
     int randomOffset = 30;
 
     // Start is called before the first frame update
+    // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
+
         rb = this.GetComponent<Rigidbody>();
 
         algorithmDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
@@ -53,11 +64,22 @@ public class RovacManager : MonoBehaviour {
         vaccumSpeed = baseSpeed * simulationSpeed;
     }
 
+    void AlgorithmValueChanged(TMP_Dropdown change) {
+        algorithmChoice = change.value;
+        switchAlgorithims(algorithmChoice);
+    }
+
+    void SpeedValueChanged(TMP_Dropdown change) {
+        int speedChoice = change.value;
+        switchSimulationSpeed(speedChoice);
+    }
+
     void Update() {
 
     }
 
     // FixedUpdate is called once per frame
+    // Will be used to change the pathing algorithm that will be run
     void FixedUpdate() {
 
         if (spiralActive) {
@@ -69,16 +91,7 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-    void AlgorithmValueChanged(TMP_Dropdown change) {
-        algorithmChoice = change.value;
-        switchAlgorithims(algorithmChoice);
-    }
-
-    void SpeedValueChanged(TMP_Dropdown change) {
-        int speedChoice = change.value;
-        switchSimulationSpeed(speedChoice);
-    }
-
+    // Will reset all algorithm bools to prepare for changing the algorithm
     void resetActive() {
         allActive = false;
         snakingActive = false;
@@ -87,6 +100,7 @@ public class RovacManager : MonoBehaviour {
         randomActive = false;
     }
 
+    // Will read the integer value denoting the seleted algorithm and changed it base on that
     void switchAlgorithims(int choice) {
 
         switch (choice) {
@@ -111,10 +125,12 @@ public class RovacManager : MonoBehaviour {
                 randomActive = true;
                 break;
             default:
+                //all algorithms run
                 break;
         }
     }
 
+    // Will change the vacuum speed based on the simulation speed selected
     void switchSimulationSpeed(int choice) {
         switch (choice) {
             case 0:
@@ -130,11 +146,13 @@ public class RovacManager : MonoBehaviour {
                 vaccumSpeed = baseSpeed * simulationSpeed;
                 break;
             default:
+                simulationSpeed = 1;  // default simulation speed will be set to 1
+                vaccumSpeed = baseSpeed * simulationSpeed;
                 break;
         }
     }
 
-    // Random Algorithm and its functions
+    // Random Algorithm and instructions for object collision
     void randomAlgo() {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
 
@@ -160,14 +178,15 @@ public class RovacManager : MonoBehaviour {
     }
 
     */
-
+    
+    // Will handle the turning of the roVac when the random algoritm is active
     float randomTurn(float currentRotation) {
-        // float start = Mathf.Abs(currentRotation);
         float start = currentRotation + 180;
         int angle = Random.Range(20, 45);
         return start + angle;
     }
 
+    // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
     float normalizeDegree(float degree) {
         if (degree > 360) {
             return degree - 360;
@@ -191,8 +210,7 @@ public class RovacManager : MonoBehaviour {
     }
     */
 
-
-    // Spiral algo and its functions
+    // Spiral Algorithm and instructions for object collision and when to spiral
     void spiralAlgo() {
         // transform.position += transform.forward * Time.deltaTime * speed;
         rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
@@ -236,7 +254,6 @@ public class RovacManager : MonoBehaviour {
             framecounter++;
         }
 
-
         //Debug.Log("counter: " + framecounter + "\n Goal: " + framegoal);
         /* 
         switch (simulationSpeed)
@@ -264,6 +281,7 @@ public class RovacManager : MonoBehaviour {
         */
     }
 
+    // Will handle changing the direction of the roVac along the cardinal directions for use in the spiral algorithm
     void changeDirections() {
 
         if (direction == 4) {
@@ -298,8 +316,7 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-
-    // all algos
+    // Will run all algorithms if none are specified 
     void allAlgo() {
         Debug.Log("all");
     }
