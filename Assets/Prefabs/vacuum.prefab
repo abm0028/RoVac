@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 5434396227804986441}
   - component: {fileID: 7035979323305461522}
   - component: {fileID: 8848947229747945795}
-  - component: {fileID: 2420822837864173421}
+  - component: {fileID: 3883903726968054607}
   m_Layer: 0
   m_Name: vacuum
-  m_TagString: Untagged
+  m_TagString: Vaccum
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -114,18 +114,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   algorithmDropdown: {fileID: 0}
   speedDropdown: {fileID: 0}
-  angle: 90
+  angle: 0.05
   rayRange: 0.65
---- !u!65 &2420822837864173421
-BoxCollider:
+--- !u!64 &3883903726968054607
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5434396227804986447}
-  m_Material: {fileID: 13400000, guid: f044017ddce2190469be9c0f7d6ee78a, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.05, y: 0, z: 0}
-  m_Center: {x: 0, y: 0, z: 0.6}
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}

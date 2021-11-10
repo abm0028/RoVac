@@ -2703,10 +2703,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallPrefab
       objectReference: {fileID: 0}
-    - target: {fileID: 4646160859320396685, guid: 4a1f91789929e914f8cc14c49f978675, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 13400000, guid: f044017ddce2190469be9c0f7d6ee78a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a1f91789929e914f8cc14c49f978675, type: 3}
 --- !u!1 &489114971
@@ -7380,22 +7376,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
-      propertyPath: m_Size.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
-      propertyPath: m_Size.z
-      value: 0.000000001
-      objectReference: {fileID: 0}
-    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 5434396227804986443, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -7443,14 +7423,6 @@ PrefabInstance:
     - target: {fileID: 5434396227804986447, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: m_Name
       value: vacuum
-      objectReference: {fileID: 0}
-    - target: {fileID: 5434396227804986447, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
-      propertyPath: m_TagString
-      value: Vaccum
-      objectReference: {fileID: 0}
-    - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
-      propertyPath: angle
-      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: speedDropdown
