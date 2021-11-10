@@ -13,6 +13,7 @@ using TMPro;
 using UnityEngine.UI;
 
 public class RovacManager : MonoBehaviour {
+
     public TMP_Dropdown algorithmDropdown, speedDropdown;
     Rigidbody rb;
     bool allActive = true;
@@ -25,6 +26,9 @@ public class RovacManager : MonoBehaviour {
     int simulationSpeed = 1;
     float vaccumSpeed;
 
+    int framegoal_1x = 315;
+    int incrementStep_1x = 315;
+
     int framegoal_50x = 6;
     int incrementStep_50x = 6;
 
@@ -34,8 +38,6 @@ public class RovacManager : MonoBehaviour {
     // Declaration and initialization of variables used in the roVac pathing algorithms
     int direction = 1;
     int framecounter = 0;
-    int framegoal_1x = 315;
-    int incrementStep_1x = 315;
 
     int turnIndex = 1;
     int turnGoal = 2;
@@ -74,8 +76,21 @@ public class RovacManager : MonoBehaviour {
         switchSimulationSpeed(speedChoice);
     }
 
+    // Update is called once per frame
+    // Will be used to check the raycast collisions when the random algoritm is active
     void Update() {
 
+        if (randomActive)
+        {
+            Ray ray = new Ray(transform.position, transform.forward);
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(ray, out hitInfo, 250) && hitInfo.transform.tag == "Wall")
+            {
+                float randRotation = transform.rotation.y;
+                transform.Rotate(0, randomTurn(randRotation), 0);
+            }
+        }
     }
 
     // FixedUpdate is called once per frame
@@ -132,6 +147,7 @@ public class RovacManager : MonoBehaviour {
 
     // Will change the vacuum speed based on the simulation speed selected
     void switchSimulationSpeed(int choice) {
+
         switch (choice) {
             case 0:
                 simulationSpeed = 1;
@@ -155,32 +171,11 @@ public class RovacManager : MonoBehaviour {
     // Random Algorithm and instructions for object collision
     void randomAlgo() {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
-
-        Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit hitInfo;
-
-        if (Physics.Raycast(ray, out hitInfo, 200) && hitInfo.transform.tag == "Wall") {
-            float randRotation = transform.rotation.y;
-            transform.Rotate(0, randomTurn(randRotation), 0);
-        }
     }
-
-    /* 
-    void OnCollisionEnter(Collision collision) {
-
-        if (randomActive) {
-            if (collision.gameObject.name.Replace("Prefab(Clone)", "") == "Wall") {
-                float randRotation = transform.rotation.y;
-                transform.Rotate(0, randomTurn(randRotation), 0);
-            }
-
-        }
-    }
-
-    */
     
     // Will handle the turning of the roVac when the random algoritm is active
     float randomTurn(float currentRotation) {
+
         float start = currentRotation + 180;
         int angle = Random.Range(20, 45);
         return start + angle;
@@ -188,6 +183,7 @@ public class RovacManager : MonoBehaviour {
 
     // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
     float normalizeDegree(float degree) {
+
         if (degree > 360) {
             return degree - 360;
         }
@@ -196,23 +192,9 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-    /*
-    void OnDrawGizmos()
-    {
-        for (int i = 0; i < numberOfRays; i++)
-        {
-            var facing = this.transform.rotation;
-            var rotationChange = Quaternion.AngleAxis((i / ((float)numberOfRays - 1)) * angle * 2 - angle, this.transform.up);
-            var direction = facing * rotationChange * Vector3.forward;
-            Gizmos.color = UnityEngine.Color.red;
-            Gizmos.DrawRay(this.transform.position, direction);
-        }
-    }
-    */
-
-    // Spiral Algorithm and instructions for object collision and when to spiral
+    // Spiral Algorithm and instructions for object collision and sensing when to spiral
     void spiralAlgo() {
-        // transform.position += transform.forward * Time.deltaTime * speed;
+
         rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
 
         if (simulationSpeed == 1) {
@@ -253,32 +235,6 @@ public class RovacManager : MonoBehaviour {
             }
             framecounter++;
         }
-
-        //Debug.Log("counter: " + framecounter + "\n Goal: " + framegoal);
-        /* 
-        switch (simulationSpeed)
-        {
-            case 1:
-                if (interval == timeInverval)
-                {
-                    changeDirections();
-                    distance++;
-                    interval = 0;
-                    timeInverval = 75 * distance;
-                }
-                break;
-            case 50:
-                if (interval == timeInverval)
-                {
-                    changeDirections();
-                    distance++;
-                    interval = 0;
-                    timeInverval = 2 * distance;
-                }
-                break;
-        }
-        interval++;
-        */
     }
 
     // Will handle changing the direction of the roVac along the cardinal directions for use in the spiral algorithm
