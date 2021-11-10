@@ -38,9 +38,6 @@ public class RovacManager : MonoBehaviour {
 
     int randomOffset = 30;
 
-
-
-
     // Start is called before the first frame update
     void Start() {
         rb = this.GetComponent<Rigidbody>();
@@ -135,8 +132,9 @@ public class RovacManager : MonoBehaviour {
 
     // Random Algorithm and its functions
     void randomAlgo() {
-        rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
-        // rb.MovePosition = transform.forward * Time.deltaTime;
+        rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
+        //rb.AddRelativeForce(baseSpeed * transform.forward);
+
     }
 
     
@@ -154,15 +152,8 @@ public class RovacManager : MonoBehaviour {
     float randomTurn(float currentRotation) {
         // float start = Mathf.Abs(currentRotation);
         float start = currentRotation + 180;
-
-        int choice = Random.Range(1, 3);
-        int angle = Random.Range(35, 46);
-        if (choice == 1) {
-            return start + angle;
-        }
-        else {
-            return start - angle;
-        }
+        int angle = Random.Range(15, 45);
+        return start + angle;
     }
 
     float normalizeDegree(float degree) {

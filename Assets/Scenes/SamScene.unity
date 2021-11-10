@@ -2703,10 +2703,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: WallPrefab
       objectReference: {fileID: 0}
-    - target: {fileID: 2083493041249296810, guid: 4a1f91789929e914f8cc14c49f978675, type: 3}
-      propertyPath: m_TagString
-      value: Wall
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a1f91789929e914f8cc14c49f978675, type: 3}
 --- !u!1 &489114971
@@ -7380,6 +7376,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
+      propertyPath: m_Size.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
+      propertyPath: m_Size.z
+      value: 0.000000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420822837864173421, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5434396227804986443, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -7431,6 +7439,10 @@ PrefabInstance:
     - target: {fileID: 5434396227804986447, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: m_TagString
       value: Vaccum
+      objectReference: {fileID: 0}
+    - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
+      propertyPath: angle
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: speedDropdown
@@ -7632,17 +7644,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6601833637515220014, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
+      propertyPath: speedDropdown
+      value: 
+      objectReference: {fileID: 611399994}
     - target: {fileID: 8536457073113597131, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
       propertyPath: m_Name
       value: FloorPrefab
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893356783350555215, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
-      propertyPath: m_Size.x
-      value: 0.95
-      objectReference: {fileID: 0}
-    - target: {fileID: 8893356783350555215, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
-      propertyPath: m_Size.z
-      value: 0.95
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
