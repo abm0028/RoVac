@@ -53,6 +53,10 @@ public class RovacManager : MonoBehaviour {
         vaccumSpeed = baseSpeed * simulationSpeed;
     }
 
+    void Update() {
+
+    }
+
     // FixedUpdate is called once per frame
     void FixedUpdate() {
 
@@ -133,11 +137,17 @@ public class RovacManager : MonoBehaviour {
     // Random Algorithm and its functions
     void randomAlgo() {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
-        //rb.AddRelativeForce(baseSpeed * transform.forward);
 
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(ray, out hitInfo, 200) && hitInfo.transform.tag == "Wall") {
+            float randRotation = transform.rotation.y;
+            transform.Rotate(0, randomTurn(randRotation), 0);
+        }
     }
 
-    
+    /* 
     void OnCollisionEnter(Collision collision) {
 
         if (randomActive) {
@@ -148,11 +158,13 @@ public class RovacManager : MonoBehaviour {
 
         }
     }
-   
+
+    */
+
     float randomTurn(float currentRotation) {
         // float start = Mathf.Abs(currentRotation);
         float start = currentRotation + 180;
-        int angle = Random.Range(15, 45);
+        int angle = Random.Range(20, 45);
         return start + angle;
     }
 
