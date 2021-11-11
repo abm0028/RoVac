@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using TMPro;
 
 public class ObjectPlacement : MonoBehaviour {
 
     public GameObject Chest, Wall, Floor;
     public GameObject ChestMouse, WallMouse, FloorMouse;
+    public Material valid, notValid;
     private bool chestActive = false;
     private bool wallActive = true;
     private bool floorActive = false;
@@ -20,12 +22,16 @@ public class ObjectPlacement : MonoBehaviour {
     List<GameObject> wallCollection = new List<GameObject>();
     List<GameObject> floorCollection = new List<GameObject>();
     Cleaning cleaningobject;
+    LineRenderer line;
 
     Vector3 worldPoint = Vector3.zero;
 
-    public Button wallButton, floorButton, chestButton, saveButton, loadButton, tableButton;
+    Vector3 startingPoint, endingPoint;
 
-     string path = @"default.txt";
+    public Button wallButton, floorButton, chestButton, saveButton, loadButton, tableButton;
+    public TMP_Text floorCountText;
+
+    string path = @"default.txt";
     //string path = @"test.txt";
 
     // Start is called before the first frame update
@@ -37,6 +43,9 @@ public class ObjectPlacement : MonoBehaviour {
 
         saveButton.GetComponent<Button>().onClick.AddListener(saveAction);
         loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
+
+        line = GameObject.Find("Line").GetComponent<LineRenderer>();
+        //line.widthCurve = 2;
     }
 
     void rotateObjects() {
@@ -69,6 +78,14 @@ public class ObjectPlacement : MonoBehaviour {
     void Update() {
         placeObject();
         objectKeyboardListener();
+
+        Ray ray = new Ray(startingPoint, endingPoint);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit)) {
+
+            // Debug.Log("Hit");
+            //Debug.Log(hit.collider.gameObject.name);
+        }
     }
 
     void placeObject() {
@@ -76,10 +93,10 @@ public class ObjectPlacement : MonoBehaviour {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
                 WallMouse.transform.position = snapPosition(worldPoint, 1.5f);
-                if (Input.GetMouseButton(0)) {
+                if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
-                       wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
-                       //Debug.Log("Wall count: " + wallCollection.Count);
+                        wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
+                        //Debug.Log("Wall count: " + wallCollection.Count);
                     }
                 }
             }
@@ -90,13 +107,14 @@ public class ObjectPlacement : MonoBehaviour {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
                 FloorMouse.transform.position = snapPosition(getWorldPoint(), 0.5f);
-                if (Input.GetMouseButton(0)) {
+                if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
                         floorCollection.Add(Instantiate(Floor, snapPosition(getWorldPoint(), 0.5f), rotationAngle));
-                        //Debug.Log("floor count: " + floorCollection.Count);
+                        updateFloorCountText();
                     }
                 }
             }
+
         }
 
         if (chestActive) {
@@ -104,7 +122,7 @@ public class ObjectPlacement : MonoBehaviour {
             if (worldPoint != Vector3.zero) {
                 ChestMouse.transform.position = snapPosition(getWorldPoint(), 1.5f);
                 ChestMouse.transform.rotation = rotationAngle;
-                if (Input.GetMouseButton(0)) {
+                if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Floor")) {
                         chestCollection.Add(Instantiate(Chest, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
                         //Debug.Log("Chest count: " + chestCollection.Count);
@@ -118,11 +136,86 @@ public class ObjectPlacement : MonoBehaviour {
             getWorldPointDelete();
         }
 
+
+
     }
 
     void objectKeyboardListener() {
         if (Input.GetKeyUp(KeyCode.R)) {
             rotateObjects();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            startingPoint = snapPosition(getWorldPoint(), 0.5f);
+            line.SetPosition(0, startingPoint);
+            line.SetPosition(1, startingPoint);
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightShift)) {
+            endingPoint = snapPosition(getWorldPoint(), 0.5f);
+            //Debug.DrawLine(startingPoint, endingPoint, Color.green, 20f, true);
+            line.SetPosition(1, endingPoint);
+
+            if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
+                line.material = valid;
+            }
+            else {
+                line.material = notValid;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.B)) {
+            if (isStraightLine()) {
+
+                if (isStraightXLine().valid) {
+                    int lowest = Math.Min(isStraightXLine().startZ, isStraightXLine().endZ);
+                    int highest = Math.Max(isStraightXLine().startZ, isStraightXLine().endZ);
+
+                    for (int i = lowest; lowest <= highest; lowest++) {
+                        floorCollection.Add(Instantiate(Floor, new Vector3(startingPoint.x, 0.5f, lowest), rotationAngle));
+                    }
+                    updateFloorCountText();
+                }
+
+                if (isStraightZLine().valid) {
+                    int lowest = Math.Min(isStraightZLine().startX, isStraightZLine().endX);
+                    int highest = Math.Max(isStraightZLine().startX, isStraightZLine().endX);
+
+                    for (int i = lowest; lowest <= highest; lowest++) {
+                        floorCollection.Add(Instantiate(Floor, new Vector3(lowest, 0.5f, startingPoint.z), rotationAngle));
+                    }
+                    updateFloorCountText();
+                }
+            }
+        }
+
+
+    }
+
+    bool isStraightLine() {
+        if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    (bool valid, int startZ, int endZ) isStraightXLine() {
+        if ((int)startingPoint.x == (int)endingPoint.x) {
+            return (true, (int)startingPoint.z, (int)endingPoint.z);
+        }
+        else {
+            return (false, (int)startingPoint.z, (int)endingPoint.z);
+        }
+    }
+
+    (bool valid, int startX, int endX) isStraightZLine() {
+        if ((int)startingPoint.z == (int)endingPoint.z) {
+            return (true, (int)startingPoint.x, (int)endingPoint.x);
+        }
+        else {
+            return (false, (int)startingPoint.x, (int)endingPoint.x);
         }
     }
 
@@ -146,18 +239,31 @@ public class ObjectPlacement : MonoBehaviour {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Input.GetMouseButton(1)) {
+        if (Input.GetMouseButtonDown(1)) {
             if (Physics.Raycast(ray, out hit)) {
                 GameObject delObject = hit.collider.gameObject;
-                if (delObject.name != "Plane") {
-                    GameObject temp = delObject;
-                    Destroy(delObject);
-                    deleteObjectFromList(floorCollection, temp);
-
+                String objType = removePrefabClone(delObject.name);
+                if (objType != "Plane") {
+                    switch (objType) {
+                        case "Floor":
+                            deleteObjectFromList(floorCollection, delObject);
+                            updateFloorCountText();
+                            break;
+                        case "Chest":
+                            deleteObjectFromList(chestCollection, delObject);
+                            break;
+                        case "Wall":
+                            deleteObjectFromList(wallCollection, delObject);
+                            break;
+                    }
                 }
             }
         }
 
+    }
+
+    String removePrefabClone(String word) {
+        return word.Replace("Prefab(Clone)", "");
     }
 
     bool validPlace(String validObject) {
@@ -166,7 +272,7 @@ public class ObjectPlacement : MonoBehaviour {
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit)) {
-            String hitObject = hit.collider.gameObject.name.Replace("Prefab(Clone)", "");
+            String hitObject = removePrefabClone(hit.collider.gameObject.name);
             if (hitObject == validObject) {
                 return true;
             }
@@ -176,7 +282,7 @@ public class ObjectPlacement : MonoBehaviour {
 
     }
 
-    public Vector3 snapPosition(Vector3 original,float yOffset) {
+    public Vector3 snapPosition(Vector3 original, float yOffset) {
         Vector3 snapped;
         snapped.x = Mathf.Floor(original.x + 0.5f);
         snapped.y = yOffset;
@@ -196,17 +302,12 @@ public class ObjectPlacement : MonoBehaviour {
         FloorMouse.transform.position = new Vector3(10, -10, 10);
     }
 
-
-
-    void deleteObjectFromList(List<GameObject> list, GameObject delObj ) {
-        int index = 0;
-        bool isFound = false;
-        while (index < list.Count || isFound) {
-            if(list[index] == delObj) {
-                isFound = true;
-                list.RemoveAt(index);
+    void deleteObjectFromList(List<GameObject> list, GameObject delObj) {
+        for (int index = 0; index < list.Count; index++) {
+            if (list[index].GetInstanceID() == delObj.GetInstanceID()) {
+                list.Remove(delObj);
+                Destroy(delObj);
             }
-            index++;
         }
     }
 
@@ -248,11 +349,12 @@ public class ObjectPlacement : MonoBehaviour {
                     default:
                         Debug.Log("Tried to load " + name + "and was not found!");
                         break;
-                    
+
                 }
             }
             sr.Close();
         }
+        updateFloorCountText();
     }
 
     void eraseObjects(List<GameObject> list) {
@@ -299,6 +401,15 @@ public class ObjectPlacement : MonoBehaviour {
         appendObjectToFile(chestCollection, "Chest");
     }
 
+    void updateFloorCountText() {
+        if (floorCollection.Count >= 200 && floorCollection.Count <= 8000) {
+            floorCountText.color = Color.green;
+        }
+        else {
+            floorCountText.color = Color.red;
+        }
+        floorCountText.text = $"Square Feet: {floorCollection.Count}";
+    }
     // time-start-of-run || algorithm || floorplan unique ID || cleaning PCT || vaccum running time || minutes left
 
 }

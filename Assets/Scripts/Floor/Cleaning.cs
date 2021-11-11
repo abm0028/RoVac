@@ -17,14 +17,14 @@ public class Cleaning : MonoBehaviour {
     // Declaration and initialization of color values for the floor tiles, and roVac cleaning speed
     int startingPoints = 1000;
     int cleaningPoints;
-    int r = 92;
-    int g = 64;
-    int b = 51;
     Color floorColor;
+    bool hasStarted = false;
 
     int simulationSpeed = 1;
 
     public TMP_Dropdown speedDropdown;
+    public Button startButton;
+
     int cleaningReduction;
     int cleanBaseRate = 5;
 
@@ -33,8 +33,9 @@ public class Cleaning : MonoBehaviour {
     void Start() {
         cleaningPoints = startingPoints;
         cleaningReduction = simulationSpeed * cleanBaseRate;
-        floorColor = new Color(r / 255f, g / 255f, b / 255f);
+        floorColor = new Color(92 / 255f, 64 / 255f, 51 / 255f);
         gameObject.GetComponent<Renderer>().material.color = floorColor;
+        startButton.GetComponent<Button>().onClick.AddListener(startAction);
         speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             SpeedValueChanged(speedDropdown);
         });
@@ -48,14 +49,17 @@ public class Cleaning : MonoBehaviour {
     // Will handle the changing of the floor color according to collision with the roVac
     void OnTriggerStay(Collider collision) {
 
-        if (collision.gameObject.tag == "Vaccum") {
-            if (cleaningPoints > 0)
-                cleaningPoints = cleaningPoints - cleaningReduction;
+        if (hasStarted) {
 
-            if(cleaningPoints < 0)
-                cleaningPoints = 0;
-           
-            gameObject.GetComponent<Renderer>().material.color = getNewColor();
+            if (collision.gameObject.tag == "Vaccum") {
+                if (cleaningPoints > 0)
+                    cleaningPoints = cleaningPoints - cleaningReduction;
+
+                if (cleaningPoints < 0)
+                    cleaningPoints = 0;
+
+                gameObject.GetComponent<Renderer>().material.color = getNewColor();
+            }
         }
 
     }
@@ -66,8 +70,7 @@ public class Cleaning : MonoBehaviour {
     }
 
     Color getNewColor() {
-        float percentage = getPercentage();
-        return Color.Lerp(Color.white, floorColor, percentage);
+        return Color.Lerp(Color.white, floorColor, getPercentage());
     }
 
     // Will change the speed of the simulation when selected by the user
@@ -94,5 +97,9 @@ public class Cleaning : MonoBehaviour {
     void SpeedValueChanged(TMP_Dropdown change) {
         int speedChoice = change.value;
         switchSimulationSpeed(speedChoice);
+    }
+
+    void startAction() {
+        hasStarted = true;
     }
 }
