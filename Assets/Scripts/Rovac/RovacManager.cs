@@ -12,7 +12,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class RovacManager : MonoBehaviour {
+public class RovacManager : MonoBehaviour
+{
 
     public TMP_Dropdown algorithmDropdown, speedDropdown;
     public Button startButton;
@@ -55,7 +56,8 @@ public class RovacManager : MonoBehaviour {
 
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
-    void Start() {
+    void Start()
+    {
 
         rb = this.GetComponent<Rigidbody>();
 
@@ -76,7 +78,7 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Update is called once per frame
-    // Will be used to check the raycast collisions when the random algoritm is active
+    // Will be used to check the raycast collisions when the random algorithm or wall follow algoritm is active
     void Update() {
         if (hasStarted) {
             /* Raycast for random algorithm */
@@ -90,51 +92,77 @@ public class RovacManager : MonoBehaviour {
                 }
             }
         }
+
+        if (wallfollowActive)
+        {
+            Ray ray = new Ray(transform.position, transform.forward);
+            RaycastHit hitInfo;
+            float angle = Random.Range(-1, 1) * 45f;
+
+            if (Physics.Raycast(ray, out hitInfo, 250) && hitInfo.transform.tag == "Wall")
+            {
+                float randRotation = transform.rotation.y;
+                transform.Rotate(0, angle, 0);
+            }
+        }
     }
 
     // FixedUpdate is called once per frame
-    // Will be used to change the pathing algorithm that will be run
-    void FixedUpdate() {
+    // Will be used to change the pathing algorithm that will run
+    void FixedUpdate()
+    {
 
-        if (hasStarted) {
-            if (spiralActive) {
+        if (hasStarted)
+        {
+            if (spiralActive)
+            {
                 spiralAlgo();
             }
 
-            if (randomActive) {
+            if (randomActive)
+            {
                 randomAlgo();
+            }
+
+            if (wallfollowActive)
+            {
+                wallfollowAlgo();
             }
 
             timeManager();
         }
-        
     }
 
-    void timeManager() {
+    void timeManager()
+    {
         framecounter = framecounter + frameInterval;
         batteryText.text = $"Battery Remaining: {getMinutes(framecounter)} minutes";
         framecounter++;
     }
 
-    string getMinutes(int frames) {
+    string getMinutes(int frames)
+    {
         float seconds = frames / 50;
         float minutes = (int)seconds / 60;
 
         return $"{150 - (int)minutes}";
     }
 
-    void AlgorithmValueChanged(TMP_Dropdown change) {
+    void AlgorithmValueChanged(TMP_Dropdown change)
+    {
         algorithmChoice = change.value;
         switchAlgorithims(algorithmChoice);
     }
 
-    void SpeedValueChanged(TMP_Dropdown change) {
+    void SpeedValueChanged(TMP_Dropdown change)
+    {
         int speedChoice = change.value;
         switchSimulationSpeed(speedChoice);
     }
 
     // Will reset all algorithm bools to prepare for changing the algorithm
-    void resetActive() {
+    void resetActive()
+    {
         allActive = false;
         snakingActive = false;
         wallfollowActive = false;
@@ -142,10 +170,11 @@ public class RovacManager : MonoBehaviour {
         randomActive = false;
     }
 
-    // Will read the integer value denoting the seleted algorithm and changed it base on that
+    // Will read the integer value denoting the seleted algorithm and changed it based on that
     void switchAlgorithims(int choice) {
 
-        switch (choice) {
+        switch (choice)
+        {
             case 0:
                 resetActive();
                 allActive = true;
@@ -173,9 +202,11 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Will change the vacuum speed based on the simulation speed selected
-    void switchSimulationSpeed(int choice) {
+    void switchSimulationSpeed(int choice)
+    {
 
-        switch (choice) {
+        switch (choice)
+        {
             case 0:
                 simulationSpeed = 1;
                 vaccumSpeed = baseSpeed * simulationSpeed;
@@ -196,43 +227,58 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-    // Random Algorithm and instructions for object collision
-    void randomAlgo() {
+    // Function to change the movement of the roVac when the random algorithm is active
+    void randomAlgo()
+    {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
     }
 
-    // Will handle the turning of the roVac when the random algoritm is active
-    float randomTurn(float currentRotation) {
+    // Function to change the movement of the roVac when the wall follow algorithm is active
+    void wallfollowAlgo()
+    {
+        rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
+    }
+
+    // Will handle the turning of the roVac when the random algorithm is active
+    float randomTurn(float currentRotation)
+    {
 
         float start = currentRotation + 180;
         int angle = Random.Range(20, 45);
         int choice = Random.Range(1, 3);
 
-        if (choice == 1) {
+        if (choice == 1)
+        {
             return start + angle;
         }
-        else {
+        else
+        {
             return start - angle;
         }
     }
 
     // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
-    float normalizeDegree(float degree) {
+    float normalizeDegree(float degree)
+    {
 
-        if (degree > 360) {
+        if (degree > 360)
+        {
             return degree - 360;
         }
-        else {
+        else
+        {
             return degree;
         }
     }
 
     // Spiral Algorithm and instructions for object collision and sensing when to spiral
-    void spiralAlgo() {
+    void spiralAlgo()
+    {
 
         rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
 
-        switch (simulationSpeed) {
+        switch (simulationSpeed)
+        {
             case 1:
                 spiralSpeedManager(ref framegoal_1x, ref incrementStep_1x);
                 break;
@@ -248,12 +294,15 @@ public class RovacManager : MonoBehaviour {
     }
 
     // manages the speed and intervals of the spirals
-    void spiralSpeedManager(ref int goal, ref int incrementStep) {
+    void spiralSpeedManager(ref int goal, ref int incrementStep)
+    {
 
-        if (framecounter == goal) {
+        if (framecounter == goal)
+        {
             transform.Rotate(0, 90, 00);
             framecounter = 0;
-            if (turnIndex == turnGoal) {
+            if (turnIndex == turnGoal)
+            {
                 goal += incrementStep;
                 turnIndex = 0;
             }
@@ -263,11 +312,13 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Will run all algorithms if none are specified 
-    void allAlgo() {
+    void allAlgo()
+    {
         Debug.Log("all");
     }
 
-    void startAction() {
+    void startAction()
+    {
         hasStarted = true;
     }
 
