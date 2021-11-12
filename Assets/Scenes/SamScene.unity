@@ -3929,7 +3929,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -4994,13 +4994,13 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: Floor 1
+    - m_Text: Hardwood LVL 1
       m_Image: {fileID: 0}
-    - m_Text: Floor 2
+    - m_Text: Loop Carpet LVL 2
       m_Image: {fileID: 0}
-    - m_Text: Floor 3
+    - m_Text: Cut Carpet LVL 3
       m_Image: {fileID: 0}
-    - m_Text: Floor 4
+    - m_Text: Frieze Carpet LVL 4
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7876,7 +7876,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Floor 1
+  m_text: Hardwood LVL 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8008,6 +8008,10 @@ PrefabInstance:
       propertyPath: startButton
       value: 
       objectReference: {fileID: 103131371}
+    - target: {fileID: 6601833637515220014, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
+      propertyPath: floorDropdown
+      value: 
+      objectReference: {fileID: 896585962}
     - target: {fileID: 6601833637515220014, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
       propertyPath: speedDropdown
       value: 
