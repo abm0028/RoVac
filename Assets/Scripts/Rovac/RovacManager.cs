@@ -14,7 +14,7 @@ using UnityEngine.UI;
 
 public class RovacManager : MonoBehaviour {
 
-    public TMP_Dropdown algorithmDropdown, speedDropdown;
+    public TMP_Dropdown algorithmDropdown, speedDropdown, floorDropdown;
     public Button startButton;
     public TMP_Text batteryText;
     Rigidbody rb;

@@ -29,6 +29,7 @@ public class ObjectPlacement : MonoBehaviour {
     Vector3 startingPoint, endingPoint;
 
     public Button wallButton, floorButton, chestButton, saveButton, loadButton, tableButton;
+    public TMP_Dropdown floorDropdown;
     public TMP_Text floorCountText;
 
     string path = @"default.txt";
@@ -45,6 +46,10 @@ public class ObjectPlacement : MonoBehaviour {
         loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
 
         line = GameObject.Find("Line").GetComponent<LineRenderer>();
+
+        floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+            FloorValueChanged(floorDropdown);
+        });
         //line.widthCurve = 2;
     }
 
@@ -409,6 +414,29 @@ public class ObjectPlacement : MonoBehaviour {
             floorCountText.color = Color.red;
         }
         floorCountText.text = $"Square Feet: {floorCollection.Count}";
+    }
+
+    void FloorValueChanged(TMP_Dropdown change) {
+        switchFloorSettings(change.value);
+    }
+
+    void switchFloorSettings(int choice) {
+        switch (choice) {
+            case 0:
+                FloorMouse.GetComponent<Renderer>().material.color = new Color(0.36f, 0.25f, 0.2f);
+                break;
+            case 1:
+                FloorMouse.GetComponent<Renderer>().material.color = new Color(0f, 0.39f, 0f);
+                break;
+            case 2:
+                FloorMouse.GetComponent<Renderer>().material.color = new Color(1f, 0.4f, 0f);
+                break;
+            case 3:
+                FloorMouse.GetComponent<Renderer>().material.color = new Color(1f, 0f, 0f);
+                break;
+            default:
+                break;
+        }
     }
     // time-start-of-run || algorithm || floorplan unique ID || cleaning PCT || vaccum running time || minutes left
 
