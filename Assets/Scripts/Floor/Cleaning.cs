@@ -19,7 +19,7 @@ public class Cleaning : MonoBehaviour {
     int cleaningPoints;
     float floorLevelMultiplier = 1f;
 
-    Color currentColor;
+    Color currentColor = new Color(0.36f, 0.25f, 0.2f);
     bool hasStarted = false;
 
     int simulationSpeed = 1;
@@ -35,7 +35,6 @@ public class Cleaning : MonoBehaviour {
     void Start() {
         cleaningPoints = startingPoints;
         cleaningReduction = simulationSpeed * cleanBaseRate;
-        currentColor = new Color(0.36f, 0.25f, 0.2f);
         gameObject.GetComponent<Renderer>().material.color = currentColor;
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
         speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {

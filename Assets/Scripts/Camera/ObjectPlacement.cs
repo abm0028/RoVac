@@ -23,6 +23,7 @@ public class ObjectPlacement : MonoBehaviour {
     List<GameObject> floorCollection = new List<GameObject>();
     Cleaning cleaningobject;
     LineRenderer line;
+    Color currentColor;
 
     Vector3 worldPoint = Vector3.zero;
 
@@ -50,6 +51,9 @@ public class ObjectPlacement : MonoBehaviour {
         floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             FloorValueChanged(floorDropdown);
         });
+
+        currentColor = new Color(0.36f, 0.25f, 0.2f);
+
         //line.widthCurve = 2;
     }
 
@@ -117,7 +121,12 @@ public class ObjectPlacement : MonoBehaviour {
                         floorCollection.Add(Instantiate(Floor, snapPosition(getWorldPoint(), 0.5f), rotationAngle));
                         updateFloorCountText();
                     }
+
                 }
+            }
+
+            if (Input.GetMouseButtonUp(0)) {
+                changeColor();
             }
 
         }
@@ -423,21 +432,45 @@ public class ObjectPlacement : MonoBehaviour {
     void switchFloorSettings(int choice) {
         switch (choice) {
             case 0:
-                FloorMouse.GetComponent<Renderer>().material.color = new Color(0.36f, 0.25f, 0.2f);
+                currentColor = new Color(0.36f, 0.25f, 0.2f);
+                changeFloorMouseColor(FloorMouse, currentColor);
                 break;
             case 1:
-                FloorMouse.GetComponent<Renderer>().material.color = new Color(0f, 0.39f, 0f);
+                currentColor = new Color(0f, 0.39f, 0f);
+                changeFloorMouseColor(FloorMouse, currentColor);
                 break;
             case 2:
-                FloorMouse.GetComponent<Renderer>().material.color = new Color(1f, 0.4f, 0f);
+                currentColor = new Color(1f, 0.4f, 0f);
+                changeFloorMouseColor(FloorMouse, currentColor);
                 break;
             case 3:
-                FloorMouse.GetComponent<Renderer>().material.color = new Color(1f, 0f, 0f);
+                currentColor = new Color(1f, 0f, 0f);
+                changeFloorMouseColor(FloorMouse, currentColor);
                 break;
             default:
                 break;
         }
+
     }
+
+    void changeFloorMouseColor(GameObject g, Color c) {
+        g.GetComponent<Renderer>().material.color = c;
+    }
+
+    void changeColor() {
+        int numberOfFloors = floorCollection.Count;
+        for (int i = numberOfFloors - 1; i > 0; i--) {
+            if (floorCollection[i].GetComponent<Renderer>().material.color != currentColor) {
+                floorCollection[i].GetComponent<Renderer>().material.color = currentColor;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+
+
     // time-start-of-run || algorithm || floorplan unique ID || cleaning PCT || vaccum running time || minutes left
 
 }
