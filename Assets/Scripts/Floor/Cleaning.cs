@@ -16,6 +16,7 @@ public class Cleaning : MonoBehaviour {
 
     // Declaration and initialization of color values for the floor tiles, and roVac cleaning speed
     int startingPoints = 10000;
+    int startingPointsBase = 10000;
     int cleaningPoints;
     float floorLevelMultiplier = 1f;
 
@@ -28,12 +29,13 @@ public class Cleaning : MonoBehaviour {
     public Button startButton;
 
     int cleaningReduction;
-    int cleanBaseRate = 250;
+    int cleanBaseRate = 50;
 
     // Start is called before the first frame update
     // Will set the color properties of the floor tiles at the start of the program
     void Start() {
-        cleaningPoints = startingPoints;
+        cleaningPoints = startingPointsBase;
+        Debug.Log(cleaningPoints);
         cleaningReduction = simulationSpeed * cleanBaseRate;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
@@ -62,7 +64,7 @@ public class Cleaning : MonoBehaviour {
                 if (cleaningPoints < 0)
                     cleaningPoints = 0;
 
-                //Debug.Log($"Total: {startingPoints} ||| Cleaning points: {cleaningPoints} ||| PCT: %: {getPercentage()}");
+                // Debug.Log($"Max: {startingPoints} ||| Current points: {cleaningPoints} ||| PCT: %: {getPercentage()}");
                 gameObject.GetComponent<Renderer>().material.color = getNewColor();
             }
         }
@@ -83,17 +85,21 @@ public class Cleaning : MonoBehaviour {
 
         switch (choice) {
             case 0:
+                cleanBaseRate = 50;
                 simulationSpeed = 1;
                 break;
             case 1:
+                cleanBaseRate = 150;
                 simulationSpeed = 50;
                 break;
             case 2:
+                cleanBaseRate = 300;
                 simulationSpeed = 100;
                 break;
             default:
                 break;
         }
+
         cleaningReduction = simulationSpeed * cleanBaseRate;
     }
 
@@ -119,7 +125,7 @@ public class Cleaning : MonoBehaviour {
                 break;
         }
 
-        startingPoints = (int)(startingPoints * floorLevelMultiplier);
+        startingPoints = (int)(startingPointsBase * floorLevelMultiplier);
         cleaningPoints = startingPoints;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
