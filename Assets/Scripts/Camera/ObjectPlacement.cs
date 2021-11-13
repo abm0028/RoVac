@@ -203,6 +203,10 @@ public class ObjectPlacement : MonoBehaviour {
             }
         }
 
+        if (Input.GetKeyUp(KeyCode.B)) {
+            changeColor();
+        }
+
 
     }
 

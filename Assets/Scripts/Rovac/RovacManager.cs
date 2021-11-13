@@ -25,26 +25,33 @@ public class RovacManager : MonoBehaviour {
     int timeFrameCounter = 0;
     int timeGoal = 450000;
     int frameInterval;
+    bool cooldown = false;
+    int cooldownCounter = 0;
+    int cooldownGoal = 1500;
 
     // Declaration and initialization of variables used in simulation and vacuum speed calculation
     float baseSpeed = 10.0f;
     int simulationSpeed = 1;
     float vaccumSpeed;
 
+    int framegoal_1xStartingPoint = 315;
     int framegoal_1x = 315;
     int incrementStep_1x = 315;
 
+    int framegoal_50xStartingPoint = 6;
     int framegoal_50x = 6;
     int incrementStep_50x = 6;
 
+    int framegoal_100xStartingPoint = 3;
     int framegoal_100x = 3;
     int incrementStep_100x = 3;
+
 
     // Declaration and initialization of variables used in the roVac pathing algorithms
 
 
     // variables used for spiral algorithms
-    int framecounter = 0;
+    int frameSpiralCounter = 0;
 
     int turnIndex = 1;
     int turnGoal = 2;
@@ -89,6 +96,19 @@ public class RovacManager : MonoBehaviour {
                     transform.Rotate(0, randomTurn(randRotation), 0);
                 }
             }
+
+            if (spiralActive) {
+                Ray ray = new Ray(transform.position, transform.forward);
+                RaycastHit hitInfo;
+
+                if (Physics.Raycast(ray, out hitInfo, 250) && hitInfo.transform.tag == "Wall") {
+                    float randRotation = transform.rotation.y;
+                    transform.Rotate(0, randomTurn(randRotation), 0);
+                    frameSpiralCounter = 0;
+                    resetSpiralTimers();
+                    cooldown = true;
+                }
+            }
         }
     }
 
@@ -98,7 +118,18 @@ public class RovacManager : MonoBehaviour {
 
         if (hasStarted) {
             if (spiralActive) {
+                if (cooldown) {
+                    randomAlgo();
+                    if (cooldownCounter == cooldownGoal) {
+
+                        cooldown = false;
+                        cooldownCounter = 0;
+                    }
+                    cooldownCounter++;
+                }
+                else {
                 spiralAlgo();
+                }
             }
 
             if (randomActive) {
@@ -107,13 +138,13 @@ public class RovacManager : MonoBehaviour {
 
             timeManager();
         }
-        
+
     }
 
     void timeManager() {
-        framecounter = framecounter + frameInterval;
-        batteryText.text = $"Battery Remaining: {getMinutes(framecounter)} minutes";
-        framecounter++;
+        timeFrameCounter = timeFrameCounter + frameInterval;
+        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
+        timeFrameCounter++;
     }
 
     string getMinutes(int frames) {
@@ -180,16 +211,19 @@ public class RovacManager : MonoBehaviour {
                 simulationSpeed = 1;
                 vaccumSpeed = baseSpeed * simulationSpeed;
                 frameInterval = 1 * simulationSpeed;
+                cooldownGoal = 1500;
                 break;
             case 1:
                 simulationSpeed = 50;
                 vaccumSpeed = baseSpeed * simulationSpeed;
                 frameInterval = 1 * simulationSpeed;
+                cooldownGoal = 150;
                 break;
             case 2:
                 simulationSpeed = 100;
                 vaccumSpeed = baseSpeed * simulationSpeed;
                 frameInterval = 1 * simulationSpeed;
+                cooldownGoal = 75;
                 break;
             default:
                 break;
@@ -249,17 +283,17 @@ public class RovacManager : MonoBehaviour {
 
     // manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
-
-        if (framecounter == goal) {
+        // Debug.Log($"Counter: {frameSpiralCounter} || Goal: {goal}");
+        if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
-            framecounter = 0;
+            frameSpiralCounter = 0;
             if (turnIndex == turnGoal) {
                 goal += incrementStep;
                 turnIndex = 0;
             }
             turnIndex++;
         }
-        framecounter++;
+        frameSpiralCounter++;
     }
 
     // Will run all algorithms if none are specified 
@@ -269,6 +303,12 @@ public class RovacManager : MonoBehaviour {
 
     void startAction() {
         hasStarted = true;
+    }
+
+    void resetSpiralTimers() {
+        framegoal_1x = framegoal_1xStartingPoint;
+        framegoal_50x = framegoal_50xStartingPoint;
+        framegoal_100x = framegoal_100xStartingPoint;
     }
 
 }
