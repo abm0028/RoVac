@@ -35,7 +35,6 @@ public class Cleaning : MonoBehaviour {
     // Will set the color properties of the floor tiles at the start of the program
     void Start() {
         cleaningPoints = startingPointsBase;
-        Debug.Log(cleaningPoints);
         cleaningReduction = simulationSpeed * cleanBaseRate;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
         startButton.GetComponent<Button>().onClick.AddListener(startAction);

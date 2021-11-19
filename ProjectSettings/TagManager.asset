@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Wall
   - Vaccum
+  - Floor
+  - Passable
   layers:
   - Default
   - TransparentFX
