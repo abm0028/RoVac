@@ -5,21 +5,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour {
-    public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton;
+    public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton;
     public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown;
-
-    bool chairActive = false;
-    bool tableActive = false;
-    bool chestActive = false;
-    bool floorActive = false;
-    bool wallActive = false;
-    bool rovacActive = false;
 
     // Start is called before the first frame update
     void Start() {
-        chairDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
-            ChairValueChanged(chairDropdown);
-        });
+        //chairDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+          //  ChairValueChanged(chairDropdown);
+        //});
 
         tableDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             TableValueChanged(tableDropdown);
@@ -45,6 +38,7 @@ public class UIManager : MonoBehaviour {
         rovacButton.GetComponent<Button>().onClick.AddListener(rovacAction);
         saveButton.GetComponent<Button>().onClick.AddListener(saveAction);
         loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
+        deleteButton.GetComponent<Button>().onClick.AddListener(deleteAction);
 
     }
 
@@ -55,6 +49,7 @@ public class UIManager : MonoBehaviour {
     void loadAction() {
         // Debug.Log("load");
     }
+
     void FloorValueChanged(TMP_Dropdown change) {
 
     }
@@ -104,17 +99,9 @@ public class UIManager : MonoBehaviour {
         rovacButton.GetComponent<Image>().color = Color.green;
     }
 
-    void resetButtons() {
-        tableActive = false;
-        chestActive = false;
-        chairActive = false;
-        floorActive = false;
-        wallActive = false;
-        rovacActive = false;
-    }
-
-    void ChairValueChanged(TMP_Dropdown change) {
-
+    void deleteAction() {
+        inactiveColor();
+        deleteButton.GetComponent<Image>().color = Color.Lerp(Color.white,Color.red, 0.5f);
     }
 
     void inactiveColor() {
@@ -124,6 +111,7 @@ public class UIManager : MonoBehaviour {
         wallButton.GetComponent<Image>().color = Color.white;
         floorButton.GetComponent<Image>().color = Color.white;
         rovacButton.GetComponent<Image>().color = Color.white;
+        deleteButton.GetComponent<Image>().color = Color.white;
     }
 }
 

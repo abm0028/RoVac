@@ -46,6 +46,8 @@ public class RovacManager : MonoBehaviour {
     int framegoal_100x = 3;
     int incrementStep_100x = 3;
 
+    float raycastLength = 1f;
+
 
     // Declaration and initialization of variables used in the roVac pathing algorithms
 
@@ -79,7 +81,6 @@ public class RovacManager : MonoBehaviour {
         vaccumSpeed = baseSpeed * simulationSpeed;
         frameInterval = 1 * simulationSpeed;
 
-
     }
 
     // Update is called once per frame
@@ -91,7 +92,9 @@ public class RovacManager : MonoBehaviour {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
 
-                if (Physics.Raycast(ray, out hitInfo, 250) && hitInfo.transform.tag == "Wall") {
+
+
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall") {
                     float randRotation = transform.rotation.y;
                     transform.Rotate(0, randomTurn(randRotation), 0);
                 }
@@ -101,7 +104,7 @@ public class RovacManager : MonoBehaviour {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
 
-                if (Physics.Raycast(ray, out hitInfo, 250) && hitInfo.transform.tag == "Wall") {
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall") {
                     float randRotation = transform.rotation.y;
                     transform.Rotate(0, randomTurn(randRotation), 0);
                     frameSpiralCounter = 0;
