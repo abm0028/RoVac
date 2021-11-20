@@ -114,8 +114,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   algorithmDropdown: {fileID: 0}
   speedDropdown: {fileID: 0}
-  angle: 0.05
-  rayRange: 0.65
+  floorDropdown: {fileID: 0}
+  startButton: {fileID: 0}
+  batteryText: {fileID: 0}
 --- !u!64 &3883903726968054607
 MeshCollider:
   m_ObjectHideFlags: 0

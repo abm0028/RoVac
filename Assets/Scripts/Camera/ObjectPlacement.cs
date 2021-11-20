@@ -600,6 +600,6 @@ public class ObjectPlacement : MonoBehaviour {
     }
 
 
-    // time-start-of-run || algorithm || floorplan unique ID || cleaning PCT || vaccum running time || minutes left
+    // time-start-of-run || algorithm || floorplan unique ID || cleaning percent || vaccum running time || minutes left
 
 }

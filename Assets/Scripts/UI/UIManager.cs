@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour {
-    public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton;
+    public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton;
     public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown;
 
     // Start is called before the first frame update
@@ -39,6 +39,7 @@ public class UIManager : MonoBehaviour {
         saveButton.GetComponent<Button>().onClick.AddListener(saveAction);
         loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
         deleteButton.GetComponent<Button>().onClick.AddListener(deleteAction);
+        bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
 
     }
 
@@ -57,6 +58,7 @@ public class UIManager : MonoBehaviour {
     void AlgorithmValueChanged(TMP_Dropdown change) {
 
     }
+    
     void SpeedValueChanged(TMP_Dropdown change) {
 
     }
@@ -103,6 +105,11 @@ public class UIManager : MonoBehaviour {
         inactiveColor();
         deleteButton.GetComponent<Image>().color = Color.Lerp(Color.white,Color.red, 0.5f);
     }
+    
+    void bulkAction() {
+        inactiveColor();
+        bulkButton.GetComponent<Image>().color = Color.green;
+    }
 
     void inactiveColor() {
         chairButton.GetComponent<Image>().color = Color.white;
@@ -112,6 +119,7 @@ public class UIManager : MonoBehaviour {
         floorButton.GetComponent<Image>().color = Color.white;
         rovacButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.white;
+        bulkButton.GetComponent<Image>().color = Color.white;
     }
 }
 
