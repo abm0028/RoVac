@@ -16,6 +16,10 @@ public class RovacManager : MonoBehaviour {
 
     public TMP_Dropdown algorithmDropdown, speedDropdown, floorDropdown;
     public Button startButton;
+    public Camera cameraobj;
+
+    ObjectPlacement objectscript;
+
     public TMP_Text batteryText;
     Rigidbody rb;
     bool allActive = true;
@@ -129,9 +133,8 @@ public class RovacManager : MonoBehaviour {
                         cooldownCounter = 0;
                     }
                     cooldownCounter++;
-                }
-                else {
-                spiralAlgo();
+                } else {
+                    spiralAlgo();
                 }
             }
 
@@ -247,8 +250,7 @@ public class RovacManager : MonoBehaviour {
 
         if (choice == 1) {
             return start + angle;
-        }
-        else {
+        } else {
             return start - angle;
         }
     }
@@ -258,8 +260,7 @@ public class RovacManager : MonoBehaviour {
 
         if (degree > 360) {
             return degree - 360;
-        }
-        else {
+        } else {
             return degree;
         }
     }
@@ -305,7 +306,14 @@ public class RovacManager : MonoBehaviour {
     }
 
     void startAction() {
-        hasStarted = true;
+
+        int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
+        if (floorcount >= 200 && floorcount <= 8000) {
+            hasStarted = true;
+        } else {
+            Debug.Log($"Not enough square feet! Did not start.");
+        }
+
     }
 
     void resetSpiralTimers() {

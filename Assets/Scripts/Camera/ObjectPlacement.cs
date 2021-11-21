@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
@@ -13,15 +12,25 @@ public class ObjectPlacement : MonoBehaviour {
     public GameObject ChestMouse, WallMouse, FloorMouse, RovacMouse, Table2x2Mouse, Table2x4Mouse, Table2x6Mouse;
     public Material valid, notValid;
 
+    float wallYOffset = 1.5f;
+    float tablesYOffset = 1.45f;
+    float floorYOffset = 0.5f;
+    float chairYOffset = 0;
+    float chestYOffset = 1.5f;
+
     bool chestActive = false;
     bool rovacActive = false;
     bool wallActive = false;
     bool floorActive = false;
     bool tablesActive = false;
     bool deleteActive = false;
+    bool bulkActive = false;
     bool table2x2Active = true;
     bool table2x4Active = false;
     bool table2x6Active = false;
+
+    int bulkCicks = 0;
+    float bulkRaycastLineHeight = 4f;
 
     int rotationDirection = 1;
     Quaternion rotationAngle = Quaternion.Euler(0.0f, 0.0f, 0.0f);
@@ -43,7 +52,7 @@ public class ObjectPlacement : MonoBehaviour {
 
     Vector3 startingPoint, endingPoint;
 
-    public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton;
+    public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton;
     public TMP_Dropdown floorDropdown, tableDropdown;
     public TMP_Text floorCountText;
 
@@ -61,6 +70,7 @@ public class ObjectPlacement : MonoBehaviour {
         loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
         tableButton.GetComponent<Button>().onClick.AddListener(tableAction);
         rovacButton.GetComponent<Button>().onClick.AddListener(rovacAction);
+        bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
 
         line = GameObject.Find("Line").GetComponent<LineRenderer>();
 
@@ -79,8 +89,7 @@ public class ObjectPlacement : MonoBehaviour {
     void rotateObjects() {
         if (rotationDirection == 4) {
             rotationDirection = 1;
-        }
-        else {
+        } else {
             rotationDirection++;
         }
 
@@ -107,23 +116,28 @@ public class ObjectPlacement : MonoBehaviour {
         placeObject();
         objectKeyboardListener();
 
-        Ray ray = new Ray(startingPoint, endingPoint);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit)) {
+    }
 
-            // Debug.Log("Hit");
-            //Debug.Log(hit.collider.gameObject.name);
-        }
+    void FixedUpdate() {
+        // Debug.Log($"Wall: {wallActive}");
+        // Debug.Log($"Floor: {floorActive}");
+        // Debug.Log($"Bulk: {bulkActive}");
+    }
+
+    public int getFloorCount() {
+        return floorCollection.Count;
     }
 
     void placeObject() {
         if (wallActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
-                WallMouse.transform.position = snapPosition(worldPoint, 1.5f);
+                if (!bulkActive) {
+                    WallMouse.transform.position = snapPosition(worldPoint, wallYOffset);
+                }
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
-                        wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
+                        wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), wallYOffset), rotationAngle));
                         //Debug.Log("Wall count: " + wallCollection.Count);
                     }
                 }
@@ -134,10 +148,12 @@ public class ObjectPlacement : MonoBehaviour {
         if (floorActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
-                FloorMouse.transform.position = snapPosition(getWorldPoint(), 0.5f);
+                if (!bulkActive) {
+                    FloorMouse.transform.position = snapPosition(getWorldPoint(), floorYOffset);
+                }
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
-                        floorCollection.Add(Instantiate(Floor, snapPosition(getWorldPoint(), 0.5f), rotationAngle));
+                        floorCollection.Add(Instantiate(Floor, snapPosition(getWorldPoint(), floorYOffset), rotationAngle));
                         updateFloorCountText();
                     }
 
@@ -153,11 +169,11 @@ public class ObjectPlacement : MonoBehaviour {
         if (chestActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
-                ChestMouse.transform.position = snapPosition(getWorldPoint(), 1.5f);
+                ChestMouse.transform.position = snapPosition(getWorldPoint(), chestYOffset);
                 ChestMouse.transform.rotation = rotationAngle;
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Floor")) {
-                        chestCollection.Add(Instantiate(Chest, snapPosition(getWorldPoint(), 1.5f), rotationAngle));
+                        chestCollection.Add(Instantiate(Chest, snapPosition(getWorldPoint(), chestYOffset), rotationAngle));
                         //Debug.Log("Chest count: " + chestCollection.Count);
                     }
                 }
@@ -181,13 +197,13 @@ public class ObjectPlacement : MonoBehaviour {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
                 if (table2x2Active) {
-                    temp(Table2x2Mouse, Table2x2, 1.45f, table2x2Collection);
+                    temp(Table2x2Mouse, Table2x2, tablesYOffset, table2x2Collection);
                 }
                 if (table2x4Active) {
-                    temp(Table2x4Mouse, Table2x4, 1.45f, table2x4Collection);
+                    temp(Table2x4Mouse, Table2x4, tablesYOffset, table2x4Collection);
                 }
                 if (table2x6Active) {
-                    temp(Table2x6Mouse, Table2x6, 1.45f, table2x6Collection);
+                    temp(Table2x6Mouse, Table2x6, tablesYOffset, table2x6Collection);
                 }
             }
         }
@@ -214,62 +230,98 @@ public class ObjectPlacement : MonoBehaviour {
             rotateObjects();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift)) {
-            startingPoint = snapPosition(getWorldPoint(), 0.5f);
-            line.SetPosition(0, startingPoint);
-            line.SetPosition(1, startingPoint);
-        }
+        if (bulkActive) {
 
-        if (Input.GetKeyDown(KeyCode.RightShift)) {
-            endingPoint = snapPosition(getWorldPoint(), 0.5f);
-            //Debug.DrawLine(startingPoint, endingPoint, Color.green, 20f, true);
-            line.SetPosition(1, endingPoint);
-
-            if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
-                line.material = valid;
+            if (Input.GetMouseButtonDown(1) && bulkCicks == 0) {
+                startingPoint = snapPosition(getWorldPoint(), bulkRaycastLineHeight);
+                // Debug.Log("First Click" + startingPoint.ToString());
+                line.SetPosition(0, startingPoint);
+                line.SetPosition(1, startingPoint);
+                bulkCicks = 1;
             }
-            else {
-                line.material = notValid;
-            }
-        }
 
-        if (Input.GetKeyDown(KeyCode.B)) {
-            if (isStraightLine()) {
+            if (bulkCicks == 1) {
 
-                if (isStraightXLine().valid) {
-                    int lowest = Math.Min(isStraightXLine().startZ, isStraightXLine().endZ);
-                    int highest = Math.Max(isStraightXLine().startZ, isStraightXLine().endZ);
-
-                    for (int i = lowest; lowest <= highest; lowest++) {
-                        floorCollection.Add(Instantiate(Floor, new Vector3(startingPoint.x, 0.5f, lowest), rotationAngle));
-                    }
-                    updateFloorCountText();
+                endingPoint = snapPosition(getWorldPoint(), bulkRaycastLineHeight);
+                line.SetPosition(1, endingPoint);
+                if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
+                    line.material = valid;
+                } else {
+                    line.material = notValid;
                 }
 
-                if (isStraightZLine().valid) {
-                    int lowest = Math.Min(isStraightZLine().startX, isStraightZLine().endX);
-                    int highest = Math.Max(isStraightZLine().startX, isStraightZLine().endX);
+                if (Input.GetMouseButtonDown(1)) {
 
-                    for (int i = lowest; lowest <= highest; lowest++) {
-                        floorCollection.Add(Instantiate(Floor, new Vector3(lowest, 0.5f, startingPoint.z), rotationAngle));
+                    if (isStraightLine()) {
+
+                        if (isStraightXLine().valid) {
+                            int lowest = Math.Min(isStraightXLine().startZ, isStraightXLine().endZ);
+                            int highest = Math.Max(isStraightXLine().startZ, isStraightXLine().endZ);
+
+                            if (lowest != highest) {
+                                if (floorActive) {
+                                    for (int i = lowest; lowest <= highest; lowest++) {
+                                        floorCollection.Add(Instantiate(Floor, new Vector3(startingPoint.x, floorYOffset, lowest), rotationAngle));
+                                    }
+                                    resetBulkLine();
+                                    updateFloorCountText();
+                                }
+
+                                if (wallActive) {
+                                    for (int i = lowest; lowest <= highest; lowest++) {
+                                        wallCollection.Add(Instantiate(Wall, new Vector3(startingPoint.x, wallYOffset, lowest), rotationAngle));
+                                    }
+                                    resetBulkLine();
+                                }
+                            }
+                        }
+
+                        if (isStraightZLine().valid) {
+                            int lowest = Math.Min(isStraightZLine().startX, isStraightZLine().endX);
+                            int highest = Math.Max(isStraightZLine().startX, isStraightZLine().endX);
+
+                            if (lowest != highest) {
+                                if (floorActive) {
+
+                                    for (int i = lowest; lowest <= highest; lowest++) {
+                                        floorCollection.Add(Instantiate(Floor, new Vector3(lowest, floorYOffset, startingPoint.z), rotationAngle));
+                                    }
+                                    updateFloorCountText();
+                                    resetBulkLine();
+                                }
+
+                                if (wallActive) {
+                                    for (int i = lowest; lowest <= highest; lowest++) {
+                                        wallCollection.Add(Instantiate(Wall, new Vector3(lowest, wallYOffset, startingPoint.z), rotationAngle));
+                                    }
+                                    resetBulkLine();
+                                }
+                            }
+                        }
+
+                        if (floorActive == false && wallActive == false) {
+                            resetBulkLine();
+                        }
                     }
-                    updateFloorCountText();
                 }
             }
+            if (Input.GetMouseButtonUp(1)) {
+                changeColor();
+            }
         }
-
-        if (Input.GetKeyUp(KeyCode.B)) {
-            changeColor();
-        }
-
-
     }
 
+    void resetBulkLine() {
+        bulkCicks = 0;
+        startingPoint = Vector3.zero;
+        endingPoint = Vector3.zero;
+        line.SetPosition(0, startingPoint);
+        line.SetPosition(1, startingPoint);
+    }
     bool isStraightLine() {
         if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -277,8 +329,7 @@ public class ObjectPlacement : MonoBehaviour {
     (bool valid, int startZ, int endZ) isStraightXLine() {
         if ((int)startingPoint.x == (int)endingPoint.x) {
             return (true, (int)startingPoint.z, (int)endingPoint.z);
-        }
-        else {
+        } else {
             return (false, (int)startingPoint.z, (int)endingPoint.z);
         }
     }
@@ -286,8 +337,7 @@ public class ObjectPlacement : MonoBehaviour {
     (bool valid, int startX, int endX) isStraightZLine() {
         if ((int)startingPoint.z == (int)endingPoint.z) {
             return (true, (int)startingPoint.x, (int)endingPoint.x);
-        }
-        else {
+        } else {
             return (false, (int)startingPoint.x, (int)endingPoint.x);
         }
     }
@@ -470,12 +520,14 @@ public class ObjectPlacement : MonoBehaviour {
     void wallAction() {
         resetObjectPositions();
         disableAll();
+        bulkRaycastLineHeight = wallYOffset;
         wallActive = true;
     }
 
     void floorAction() {
         resetObjectPositions();
         disableAll();
+        bulkRaycastLineHeight = floorYOffset;
         floorActive = true;
     }
 
@@ -497,8 +549,7 @@ public class ObjectPlacement : MonoBehaviour {
     void updateFloorCountText() {
         if (floorCollection.Count >= 200 && floorCollection.Count <= 8000) {
             floorCountText.color = Color.green;
-        }
-        else {
+        } else {
             floorCountText.color = Color.red;
         }
         floorCountText.text = $"Square Feet: {floorCollection.Count}";
@@ -574,8 +625,7 @@ public class ObjectPlacement : MonoBehaviour {
         for (int i = numberOfFloors - 1; i > 0; i--) {
             if (floorCollection[i].GetComponent<Renderer>().material.color != currentColor) {
                 floorCollection[i].GetComponent<Renderer>().material.color = currentColor;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -597,6 +647,18 @@ public class ObjectPlacement : MonoBehaviour {
         resetObjectPositions();
         disableAll();
         deleteActive = true;
+    }
+
+    void bulkAction() {
+        resetObjectPositions();
+        deleteActive = false;
+        if (!bulkActive) {
+            bulkActive = true;
+        } else {
+            bulkActive = false;
+            resetBulkLine();
+        }
+
     }
 
 
