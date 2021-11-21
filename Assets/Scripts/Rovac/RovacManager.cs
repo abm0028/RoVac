@@ -15,10 +15,11 @@ using UnityEngine.UI;
 public class RovacManager : MonoBehaviour {
 
     public TMP_Dropdown algorithmDropdown, speedDropdown, floorDropdown;
-    public Button startButton;
+    public Button startButton, stopButton;
     public Camera cameraobj;
 
     ObjectPlacement objectscript;
+    GUIContent content;
 
     public TMP_Text batteryText;
     Rigidbody rb;
@@ -64,8 +65,6 @@ public class RovacManager : MonoBehaviour {
 
     // Variables specific to the random algorithm
 
-
-
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
@@ -84,7 +83,6 @@ public class RovacManager : MonoBehaviour {
 
         vaccumSpeed = baseSpeed * simulationSpeed;
         frameInterval = 1 * simulationSpeed;
-
     }
 
     // Update is called once per frame
@@ -311,10 +309,10 @@ public class RovacManager : MonoBehaviour {
         if (floorcount >= 200 && floorcount <= 8000) {
             hasStarted = true;
         } else {
-            Debug.Log($"Not enough square feet! Did not start.");
-        }
 
+        }
     }
+
 
     void resetSpiralTimers() {
         framegoal_1x = framegoal_1xStartingPoint;
