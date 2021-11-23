@@ -17,6 +17,9 @@ public class RovacManager : MonoBehaviour {
     public TMP_Dropdown algorithmDropdown, speedDropdown, floorDropdown;
     public Button startButton, stopButton;
     public Camera cameraobj;
+    public GameObject panel;
+
+    Vector3 rovacPosition;
 
     ObjectPlacement objectscript;
     GUIContent content;
@@ -28,7 +31,9 @@ public class RovacManager : MonoBehaviour {
     int algorithmChoice = 0;
     bool hasStarted = false;
     int timeFrameCounter = 0;
+    int timeGoalStartingPoint = 450000;
     int timeGoal = 450000;
+    // int timeGoal = 10000;
     int frameInterval;
     bool cooldown = false;
     int cooldownCounter = 0;
@@ -69,9 +74,12 @@ public class RovacManager : MonoBehaviour {
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
 
+        rovacPosition = transform.position;
+
         rb = this.GetComponent<Rigidbody>();
 
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
+        stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
 
         algorithmDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             AlgorithmValueChanged(algorithmDropdown);
@@ -149,6 +157,10 @@ public class RovacManager : MonoBehaviour {
         timeFrameCounter = timeFrameCounter + frameInterval;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
         timeFrameCounter++;
+        if (timeFrameCounter >= timeGoal) {
+            panel.GetComponent<UIManager>().stopAction();
+            stopAction();
+        }
     }
 
     string getMinutes(int frames) {
@@ -311,6 +323,13 @@ public class RovacManager : MonoBehaviour {
         } else {
 
         }
+    }
+
+    void stopAction() {
+        hasStarted = false;
+        transform.position = rovacPosition;
+        timeFrameCounter = 0;
+        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
     }
 
 

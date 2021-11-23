@@ -12,6 +12,10 @@ public class ObjectPlacement : MonoBehaviour {
     public GameObject ChestMouse, WallMouse, FloorMouse, RovacMouse, Table2x2Mouse, Table2x4Mouse, Table2x6Mouse;
     public Material valid, notValid;
 
+    Cleaning cleaningScript;
+
+
+
     float wallYOffset = 1.5f;
     float tablesYOffset = 1.45f;
     float floorYOffset = 0.5f;
@@ -56,8 +60,8 @@ public class ObjectPlacement : MonoBehaviour {
     public TMP_Dropdown floorDropdown, tableDropdown;
     public TMP_Text floorCountText;
 
-    string path = @"default.txt";
-    //string path = @"test.txt";
+    // string path = $"{Application.dataPath}/StreamingAssets/default.txt";
+    string path = @"Assets/Resources/default.txt";
 
     // Start is called before the first frame update
     void Start() {
@@ -82,8 +86,6 @@ public class ObjectPlacement : MonoBehaviour {
         });
 
         currentColor = new Color(0.36f, 0.25f, 0.2f);
-
-        //line.widthCurve = 2;
     }
 
     void rotateObjects() {
@@ -126,6 +128,19 @@ public class ObjectPlacement : MonoBehaviour {
 
     public int getFloorCount() {
         return floorCollection.Count;
+    }
+
+    public float getAverages() {
+
+        int count = floorCollection.Count;
+        float sum = 0.0f;
+
+        foreach (GameObject Floor in floorCollection) {
+            sum += Floor.GetComponent<Cleaning>().getPercentage();
+        }
+
+        float average = sum / (float)count;
+        return average;
     }
 
     void placeObject() {
@@ -228,6 +243,10 @@ public class ObjectPlacement : MonoBehaviour {
     void objectKeyboardListener() {
         if (Input.GetKeyUp(KeyCode.R)) {
             rotateObjects();
+        }
+
+        if (Input.GetKeyUp(KeyCode.P)) {
+            getAverages();
         }
 
         if (bulkActive) {
@@ -468,6 +487,7 @@ public class ObjectPlacement : MonoBehaviour {
 
     void readFile() {
 
+        Resources.Load(path);
         eraseObjects(floorCollection);
         eraseObjects(wallCollection);
         eraseObjects(chestCollection);

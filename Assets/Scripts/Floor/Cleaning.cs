@@ -26,7 +26,7 @@ public class Cleaning : MonoBehaviour {
     int simulationSpeed = 1;
 
     public TMP_Dropdown speedDropdown, floorDropdown;
-    public Button startButton;
+    public Button startButton, stopButton;
 
     int cleaningReduction;
     int cleanBaseRate = 50;
@@ -38,6 +38,7 @@ public class Cleaning : MonoBehaviour {
         cleaningReduction = simulationSpeed * cleanBaseRate;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
+        stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
         speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             SpeedValueChanged(speedDropdown);
         });
@@ -141,5 +142,11 @@ public class Cleaning : MonoBehaviour {
 
     void startAction() {
         hasStarted = true;
+    }
+
+    void stopAction() {
+
+        cleaningPoints = startingPoints;
+        gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
 }

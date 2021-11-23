@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour {
 
     }
 
-    void hideUI() {
+    public void hideUI() {
         chairButton.gameObject.SetActive(false);
         tableButton.gameObject.SetActive(false);
         chestButton.gameObject.SetActive(false);
@@ -79,7 +79,7 @@ public class UIManager : MonoBehaviour {
         this.gameObject.GetComponent<Image>().color = new Color(0.247f, 0.247f, 0.247f, 1.0f);
     }
 
-    void stopAction() {
+    public void stopAction() {
         if (hasStarted) {
             hasStarted = false;
             showUI();
