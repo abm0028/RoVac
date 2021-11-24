@@ -6113,6 +6113,7 @@ MonoBehaviour:
   Table2x6Mouse: {fileID: 959764247}
   valid: {fileID: 2100000, guid: cc827ca6e15c75e4db1d705a5de5d212, type: 2}
   notValid: {fileID: 2100000, guid: b0ac7ae5b69c1914a862d2fe3e0999ab, type: 2}
+  floorCollection: []
   wallButton: {fileID: 1780980943}
   floorButton: {fileID: 831902959}
   chestButton: {fileID: 374439214}
@@ -8797,6 +8798,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
+      propertyPath: panel
+      value: 
+      objectReference: {fileID: 1470435644}
+    - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: table2x2
       value: 
       objectReference: {fileID: 1815782694}
@@ -8804,6 +8809,10 @@ PrefabInstance:
       propertyPath: cameraobj
       value: 
       objectReference: {fileID: 963194227}
+    - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
+      propertyPath: stopButton
+      value: 
+      objectReference: {fileID: 582730968}
     - target: {fileID: 8848947229747945795, guid: 8da8edec4469f4745b622810b311e9f0, type: 3}
       propertyPath: batteryText
       value: 
@@ -9030,6 +9039,10 @@ PrefabInstance:
       propertyPath: m_Mass
       value: 1e+9
       objectReference: {fileID: 0}
+    - target: {fileID: 6601833637515220014, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
+      propertyPath: stopButton
+      value: 
+      objectReference: {fileID: 582730968}
     - target: {fileID: 6601833637515220014, guid: 09b98020e110a8044ba24c17b3f0a83f, type: 3}
       propertyPath: startButton
       value: 

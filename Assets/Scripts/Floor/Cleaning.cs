@@ -144,8 +144,13 @@ public class Cleaning : MonoBehaviour {
         hasStarted = true;
     }
 
-    void stopAction() {
+    // public void resetFloor() {
+    //     cleaningPoints = startingPoints;
+    //     gameObject.GetComponent<Renderer>().material.color = currentColor;
+    // }
 
+    public void stopAction() {
+        hasStarted = false;
         cleaningPoints = startingPoints;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }

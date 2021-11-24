@@ -10,6 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
+using System.IO;
 using UnityEngine.UI;
 
 public class RovacManager : MonoBehaviour {
@@ -29,6 +31,7 @@ public class RovacManager : MonoBehaviour {
     bool allActive = true;
     bool snakingActive, wallfollowActive, spiralActive, randomActive = false;
     int algorithmChoice = 0;
+    String selectedAlgorithm = "All";
     bool hasStarted = false;
     int timeFrameCounter = 0;
     int timeGoalStartingPoint = 450000;
@@ -69,6 +72,8 @@ public class RovacManager : MonoBehaviour {
     int turnGoal = 2;
 
     // Variables specific to the random algorithm
+
+    string path = @"Assets/Resources/records.csv";
 
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
@@ -123,6 +128,10 @@ public class RovacManager : MonoBehaviour {
                 }
             }
         }
+
+        if (Input.GetKeyUp(KeyCode.P)) {
+            recordData();
+        }
     }
 
     // FixedUpdate is called once per frame
@@ -153,32 +162,8 @@ public class RovacManager : MonoBehaviour {
 
     }
 
-    void timeManager() {
-        timeFrameCounter = timeFrameCounter + frameInterval;
-        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
-        timeFrameCounter++;
-        if (timeFrameCounter >= timeGoal) {
-            panel.GetComponent<UIManager>().stopAction();
-            stopAction();
-        }
-    }
+    /*------------------------------------------ Random Algo ------------------------------------------*/
 
-    string getMinutes(int frames) {
-        float seconds = frames / 50;
-        float minutes = (int)seconds / 60;
-
-        return $"{150 - (int)minutes}";
-    }
-
-    void AlgorithmValueChanged(TMP_Dropdown change) {
-        algorithmChoice = change.value;
-        switchAlgorithims(algorithmChoice);
-    }
-
-    void SpeedValueChanged(TMP_Dropdown change) {
-        int speedChoice = change.value;
-        switchSimulationSpeed(speedChoice);
-    }
 
     // Will reset all algorithm bools to prepare for changing the algorithm
     void resetActive() {
@@ -189,28 +174,216 @@ public class RovacManager : MonoBehaviour {
         randomActive = false;
     }
 
+    // Random Algorithm and instructions for object collision
+    void randomAlgo() {
+        rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
+    }
+
+    // Will handle the turning of the roVac when the random algoritm is active
+    float randomTurn(float currentRotation) {
+
+        float start = currentRotation + 180;
+        int angle = UnityEngine.Random.Range(20, 45);
+        int choice = UnityEngine.Random.Range(1, 3);
+
+        if (choice == 1) {
+            return start + angle;
+        } else {
+            return start - angle;
+        }
+    }
+
+
+    // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
+    float normalizeDegree(float degree) {
+
+        if (degree > 360) {
+            return degree - 360;
+        } else {
+            return degree;
+        }
+    }
+
+    /*------------------------------------------ Sprial Algo ------------------------------------------*/
+
+    // manages the speed and intervals of the spirals
+    void spiralSpeedManager(ref int goal, ref int incrementStep) {
+        // Debug.Log($"Counter: {frameSpiralCounter} || Goal: {goal}");
+        if (frameSpiralCounter == goal) {
+            transform.Rotate(0, 90, 00);
+            frameSpiralCounter = 0;
+            if (turnIndex == turnGoal) {
+                goal += incrementStep;
+                turnIndex = 0;
+            }
+            turnIndex++;
+        }
+        frameSpiralCounter++;
+    }
+
+    void spiralAlgo() {
+
+        rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
+
+        switch (simulationSpeed) {
+            case 1:
+                spiralSpeedManager(ref framegoal_1x, ref incrementStep_1x);
+                break;
+            case 50:
+                spiralSpeedManager(ref framegoal_50x, ref incrementStep_50x);
+                break;
+            case 100:
+                spiralSpeedManager(ref framegoal_100x, ref incrementStep_100x);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /*------------------------------------------ All algo ------------------------------------------*/
+
+    // Will run all algorithms if none are specified 
+    void allAlgo() {
+        Debug.Log("all");
+    }
+
+    /*------------------------------------------ Time managment ------------------------------------------*/
+
+    void timeManager() {
+        timeFrameCounter = timeFrameCounter + frameInterval;
+        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
+        timeFrameCounter++;
+        if (timeFrameCounter >= timeGoal) {
+            recordData();
+            Debug.Log("Time Stopped");
+            panel.GetComponent<UIManager>().stopAction();
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            stopAction();
+            resetFloors();
+        }
+    }
+
+    string getMinutes(int frames) {
+        float seconds = frames / 50;
+        float minutes = (int)seconds / 60;
+
+        return $"{150 - (int)minutes}";
+    }
+
+    void resetFloors() {
+
+        List<GameObject> tempFloor = cameraobj.GetComponent<ObjectPlacement>().floorCollection;
+
+        foreach (GameObject floor in tempFloor) {
+            floor.GetComponent<Cleaning>().stopAction();
+        }
+
+    }
+
+    void resetSpiralTimers() {
+        framegoal_1x = framegoal_1xStartingPoint;
+        framegoal_50x = framegoal_50xStartingPoint;
+        framegoal_100x = framegoal_100xStartingPoint;
+    }
+
+    /*----------------------------------------- Data Recording -----------------------------------------*/
+
+    void recordData() {
+
+        createFile();
+        appendToFile();
+
+        Debug.Log("Recorded");
+    }
+
+    void createFile() {
+
+        if (File.Exists(path)) {
+            return;
+        } else {
+            using (StreamWriter sw = File.CreateText(path)) {
+                sw.Close();
+            }
+
+            using (StreamWriter sw = File.AppendText(path)) {
+                String output = $"Date, Algorithm, Algorithm Version, ID, Cleaning Pct, Time remaining";
+                sw.WriteLine(output);
+                sw.Close();
+            }
+            return;
+        }
+    }
+
+    // convert float to percentage
+    string convertToPercentage(float value) {
+        double rounded = Math.Round(value, 2);
+        return $"{rounded * 100}%";
+    }
+
+    void appendToFile() {
+        using (StreamWriter sw = File.AppendText(path)) {
+
+            String pcDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz");
+            String humanDate = DateTime.Now.ToString("MM-dd-yyyy HH:mm:ss");
+            String minutes = getMinutes(timeFrameCounter);
+            float average = cameraobj.GetComponent<ObjectPlacement>().getAverages();
+
+
+            String output = $"{humanDate}, {selectedAlgorithm}, {selectedAlgorithm} 1.0, ID, {convertToPercentage(average)}, {minutes} minutes";
+            sw.WriteLine(output);
+            sw.Close();
+        }
+    }
+
+
+    /*---------------------------------------------- Buttons ----------------------------------------------*/
+    void startAction() {
+        int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
+        if (floorcount >= 200 && floorcount <= 8000) {
+            hasStarted = true;
+        } else {
+
+        }
+    }
+
+    void stopAction() {
+        recordData();
+        hasStarted = false;
+        transform.position = rovacPosition;
+        timeFrameCounter = 0;
+        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
+    }
+
+
+
     // Will read the integer value denoting the seleted algorithm and changed it base on that
     void switchAlgorithims(int choice) {
 
         switch (choice) {
             case 0:
                 resetActive();
+                selectedAlgorithm = "All";
                 allActive = true;
                 break;
             case 1:
                 resetActive();
+                selectedAlgorithm = "Snaking";
                 snakingActive = true;
                 break;
             case 2:
                 resetActive();
+                selectedAlgorithm = "Wall-follow";
                 wallfollowActive = true;
                 break;
             case 3:
                 resetActive();
+                selectedAlgorithm = "Spiral";
                 spiralActive = true;
                 break;
             case 4:
                 resetActive();
+                selectedAlgorithm = "Random";
                 randomActive = true;
                 break;
             default:
@@ -246,97 +419,13 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-    // Random Algorithm and instructions for object collision
-    void randomAlgo() {
-        rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
+    void AlgorithmValueChanged(TMP_Dropdown change) {
+        algorithmChoice = change.value;
+        switchAlgorithims(algorithmChoice);
     }
 
-    // Will handle the turning of the roVac when the random algoritm is active
-    float randomTurn(float currentRotation) {
-
-        float start = currentRotation + 180;
-        int angle = Random.Range(20, 45);
-        int choice = Random.Range(1, 3);
-
-        if (choice == 1) {
-            return start + angle;
-        } else {
-            return start - angle;
-        }
+    void SpeedValueChanged(TMP_Dropdown change) {
+        int speedChoice = change.value;
+        switchSimulationSpeed(speedChoice);
     }
-
-    // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
-    float normalizeDegree(float degree) {
-
-        if (degree > 360) {
-            return degree - 360;
-        } else {
-            return degree;
-        }
-    }
-
-    // Spiral Algorithm and instructions for object collision and sensing when to spiral
-    void spiralAlgo() {
-
-        rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
-
-        switch (simulationSpeed) {
-            case 1:
-                spiralSpeedManager(ref framegoal_1x, ref incrementStep_1x);
-                break;
-            case 50:
-                spiralSpeedManager(ref framegoal_50x, ref incrementStep_50x);
-                break;
-            case 100:
-                spiralSpeedManager(ref framegoal_100x, ref incrementStep_100x);
-                break;
-            default:
-                break;
-        }
-    }
-
-    // manages the speed and intervals of the spirals
-    void spiralSpeedManager(ref int goal, ref int incrementStep) {
-        // Debug.Log($"Counter: {frameSpiralCounter} || Goal: {goal}");
-        if (frameSpiralCounter == goal) {
-            transform.Rotate(0, 90, 00);
-            frameSpiralCounter = 0;
-            if (turnIndex == turnGoal) {
-                goal += incrementStep;
-                turnIndex = 0;
-            }
-            turnIndex++;
-        }
-        frameSpiralCounter++;
-    }
-
-    // Will run all algorithms if none are specified 
-    void allAlgo() {
-        Debug.Log("all");
-    }
-
-    void startAction() {
-
-        int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
-        if (floorcount >= 200 && floorcount <= 8000) {
-            hasStarted = true;
-        } else {
-
-        }
-    }
-
-    void stopAction() {
-        hasStarted = false;
-        transform.position = rovacPosition;
-        timeFrameCounter = 0;
-        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
-    }
-
-
-    void resetSpiralTimers() {
-        framegoal_1x = framegoal_1xStartingPoint;
-        framegoal_50x = framegoal_50xStartingPoint;
-        framegoal_100x = framegoal_100xStartingPoint;
-    }
-
 }

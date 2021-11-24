@@ -41,7 +41,7 @@ public class ObjectPlacement : MonoBehaviour {
 
     List<GameObject> chestCollection = new List<GameObject>();
     List<GameObject> wallCollection = new List<GameObject>();
-    List<GameObject> floorCollection = new List<GameObject>();
+    public List<GameObject> floorCollection = new List<GameObject>();
     List<GameObject> rovacCollection = new List<GameObject>();
     List<GameObject> table2x2Collection = new List<GameObject>();
     List<GameObject> table2x4Collection = new List<GameObject>();
@@ -139,7 +139,7 @@ public class ObjectPlacement : MonoBehaviour {
             sum += Floor.GetComponent<Cleaning>().getPercentage();
         }
 
-        float average = sum / (float)count;
+        float average = 1 - (sum / (float)count);
         return average;
     }
 
@@ -487,7 +487,6 @@ public class ObjectPlacement : MonoBehaviour {
 
     void readFile() {
 
-        Resources.Load(path);
         eraseObjects(floorCollection);
         eraseObjects(wallCollection);
         eraseObjects(chestCollection);
