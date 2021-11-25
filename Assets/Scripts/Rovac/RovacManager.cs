@@ -352,6 +352,8 @@ public class RovacManager : MonoBehaviour {
         hasStarted = false;
         transform.position = rovacPosition;
         timeFrameCounter = 0;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
     }
 
