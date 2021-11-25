@@ -140,6 +140,9 @@ public class UIManager : MonoBehaviour {
 
     void deleteAction() {
         inactiveColor();
+        if (bulkActive) {
+            bulkActive = false;
+        }
         bulkButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, 0.5f);
     }
@@ -147,8 +150,11 @@ public class UIManager : MonoBehaviour {
         if (bulkActive) {
             bulkActive = false;
             bulkButton.GetComponent<Image>().color = Color.white;
+            Debug.Log("Entered Deactive");
         } else {
+            bulkActive = true;
             bulkButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.yellow, 0.5f);
+            Debug.Log("Entered Active");
         }
 
         deleteButton.GetComponent<Image>().color = Color.white;
