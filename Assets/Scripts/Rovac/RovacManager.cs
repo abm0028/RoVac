@@ -17,6 +17,7 @@ using UnityEngine.UI;
 public class RovacManager : MonoBehaviour {
 
     public TMP_Dropdown algorithmDropdown, speedDropdown, floorDropdown;
+    public TMP_InputField IDField;
     public Button startButton, stopButton;
     public Camera cameraobj;
     public GameObject panel;
@@ -75,6 +76,8 @@ public class RovacManager : MonoBehaviour {
 
     string path = @"Assets/Resources/records.csv";
 
+    string IDName = "ID";
+
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
@@ -94,9 +97,15 @@ public class RovacManager : MonoBehaviour {
             SpeedValueChanged(speedDropdown);
         });
 
+        //IDField = GameObject.Find("InputField (TMP)").GetComponent<TMP_InputField>();
+        IDField.GetComponent<TMP_InputField>().onValueChanged.AddListener(inputAction);
+
         vaccumSpeed = baseSpeed * simulationSpeed;
         frameInterval = 1 * simulationSpeed;
     }
+
+
+
 
     // Update is called once per frame
     // Will be used to check the raycast collisions when the random algoritm is active
@@ -329,13 +338,18 @@ public class RovacManager : MonoBehaviour {
             String minutes = getMinutes(timeFrameCounter);
             float average = cameraobj.GetComponent<ObjectPlacement>().getAverages();
 
-
-            String output = $"{humanDate}, {selectedAlgorithm}, {selectedAlgorithm} 1.0, ID, {convertToPercentage(average)}, {minutes} minutes";
+            String output = $"{humanDate}, {selectedAlgorithm}, {selectedAlgorithm} 1.0,{IDName}, {convertToPercentage(average)}, {minutes} minutes";
             sw.WriteLine(output);
             sw.Close();
         }
     }
 
+    void inputAction(string value) {
+        // To get the text
+        IDName = value;
+        Debug.Log(IDName);
+
+    }
 
     /*---------------------------------------------- Buttons ----------------------------------------------*/
     void startAction() {
@@ -352,6 +366,8 @@ public class RovacManager : MonoBehaviour {
         hasStarted = false;
         transform.position = rovacPosition;
         timeFrameCounter = 0;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
     }
 

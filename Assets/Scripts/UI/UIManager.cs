@@ -7,6 +7,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour {
     public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton, exitButton, stopButton, startButton;
     public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown;
+    public TMP_InputField IDField;
     bool bulkActive = false;
     bool hasStarted = false;
     ObjectPlacement objectscript;
@@ -52,7 +53,9 @@ public class UIManager : MonoBehaviour {
         algorithmDropdown.gameObject.SetActive(false);
         tableDropdown.gameObject.SetActive(false);
         chairDropdown.gameObject.SetActive(false);
+        IDField.gameObject.SetActive(false);
         stopButton.gameObject.SetActive(true);
+
         this.gameObject.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
@@ -75,6 +78,7 @@ public class UIManager : MonoBehaviour {
         algorithmDropdown.gameObject.SetActive(true);
         tableDropdown.gameObject.SetActive(true);
         chairDropdown.gameObject.SetActive(true);
+        IDField.gameObject.SetActive(true);
         stopButton.gameObject.SetActive(false);
         this.gameObject.GetComponent<Image>().color = new Color(0.247f, 0.247f, 0.247f, 1.0f);
     }
@@ -140,6 +144,9 @@ public class UIManager : MonoBehaviour {
 
     void deleteAction() {
         inactiveColor();
+        if (bulkActive) {
+            bulkActive = false;
+        }
         bulkButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, 0.5f);
     }
@@ -148,6 +155,7 @@ public class UIManager : MonoBehaviour {
             bulkActive = false;
             bulkButton.GetComponent<Image>().color = Color.white;
         } else {
+            bulkActive = true;
             bulkButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.yellow, 0.5f);
         }
 
