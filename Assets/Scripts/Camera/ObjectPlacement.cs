@@ -8,20 +8,22 @@ using TMPro;
 
 public class ObjectPlacement : MonoBehaviour {
 
+    // creates mouse and actual objects
     public GameObject Chest, Wall, Floor, Rovac, Table2x2, Table2x4, Table2x6;
     public GameObject ChestMouse, WallMouse, FloorMouse, RovacMouse, Table2x2Mouse, Table2x4Mouse, Table2x6Mouse;
+    // material used for the line in bulk mode
+    // valid is green
+    // invalid is red
     public Material valid, notValid;
 
-    Cleaning cleaningScript;
-
-
-
+    // y offset for the objects when they are placed
     float wallYOffset = 1.5f;
     float tablesYOffset = 1.45f;
     float floorYOffset = 0.5f;
     float chairYOffset = 0;
     float chestYOffset = 1.5f;
 
+    // bools to see which object is active to be placed
     bool chestActive = false;
     bool rovacActive = false;
     bool wallActive = false;
@@ -33,29 +35,34 @@ public class ObjectPlacement : MonoBehaviour {
     bool table2x4Active = false;
     bool table2x6Active = false;
 
+    // counts how many bulk clicks have been made
     int bulkCicks = 0;
+    // default linegiht for the line in bulk mode
     float bulkRaycastLineHeight = 4f;
 
     int rotationDirection = 1;
     Quaternion rotationAngle = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 
+    // creates the lists that hold objects
+    // floor is public because it needs to be accesed in other classes
+    public List<GameObject> floorCollection = new List<GameObject>();
     List<GameObject> chestCollection = new List<GameObject>();
     List<GameObject> wallCollection = new List<GameObject>();
-    public List<GameObject> floorCollection = new List<GameObject>();
-    List<GameObject> rovacCollection = new List<GameObject>();
     List<GameObject> table2x2Collection = new List<GameObject>();
     List<GameObject> table2x4Collection = new List<GameObject>();
     List<GameObject> table2x6Collection = new List<GameObject>();
 
-
-    Cleaning cleaningobject;
+    // create line for bulk mode
     LineRenderer line;
-    Color currentColor;
-
-    Vector3 worldPoint = Vector3.zero;
-
+    // Vectors for the starting and ending points of the line for bulk mode
     Vector3 startingPoint, endingPoint;
 
+    // defaults worldpoint to zero
+    Vector3 worldPoint = Vector3.zero;
+    Color floorCurrentColor;
+
+
+    // objexcts for the UI elements
     public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton;
     public TMP_Dropdown floorDropdown, tableDropdown;
     public TMP_Text floorCountText;
@@ -66,6 +73,8 @@ public class ObjectPlacement : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         worldPoint = getWorldPoint();
+
+        // adds the listeneres to the UI elements
         wallButton.GetComponent<Button>().onClick.AddListener(wallAction);
         floorButton.GetComponent<Button>().onClick.AddListener(floorAction);
         chestButton.GetComponent<Button>().onClick.AddListener(chestAction);
@@ -75,9 +84,6 @@ public class ObjectPlacement : MonoBehaviour {
         tableButton.GetComponent<Button>().onClick.AddListener(tableAction);
         rovacButton.GetComponent<Button>().onClick.AddListener(rovacAction);
         bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
-
-        line = GameObject.Find("Line").GetComponent<LineRenderer>();
-
         floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             FloorValueChanged(floorDropdown);
         });
@@ -85,9 +91,13 @@ public class ObjectPlacement : MonoBehaviour {
             TableValueChanged(tableDropdown);
         });
 
-        currentColor = new Color(0.36f, 0.25f, 0.2f);
+        // init line renderer for bulk mode
+        line = GameObject.Find("Line").GetComponent<LineRenderer>();
+        floorCurrentColor = new Color(0.36f, 0.25f, 0.2f);
     }
 
+
+    // rotates objects
     void rotateObjects() {
         if (rotationDirection == 4) {
             rotationDirection = 1;
@@ -120,18 +130,13 @@ public class ObjectPlacement : MonoBehaviour {
 
     }
 
-    void FixedUpdate() {
-        // Debug.Log($"Wall: {wallActive}");
-        // Debug.Log($"Floor: {floorActive}");
-        // Debug.Log($"Bulk: {bulkActive}");
-    }
-
+    // returns the floor count of the floorcollection
     public int getFloorCount() {
         return floorCollection.Count;
     }
 
+    // gets the average dirtiness of all the floor tiles in the simulation
     public float getAverages() {
-
         int count = floorCollection.Count;
         float sum = 0.0f;
 
@@ -143,13 +148,19 @@ public class ObjectPlacement : MonoBehaviour {
         return average;
     }
 
+    // places objects
     void placeObject() {
+
+        // if wall is selected
         if (wallActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
+                // if is in bulk mode do not render wall on mouse position
                 if (!bulkActive) {
+                    // snaps position to the grid
                     WallMouse.transform.position = snapPosition(worldPoint, wallYOffset);
                 }
+                // if mouse is on plane then it it will addd the wall to the list and add to world
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
                         wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), wallYOffset), rotationAngle));
@@ -157,37 +168,44 @@ public class ObjectPlacement : MonoBehaviour {
                     }
                 }
             }
-
         }
 
+        // if floor is selected
         if (floorActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
+                // if is in bulk mode do not render floor on mouse position
                 if (!bulkActive) {
+                    // snaps position to the grid
                     FloorMouse.transform.position = snapPosition(getWorldPoint(), floorYOffset);
                 }
+                // if mouse is on plane then it it will addd the floor to the list and add to world
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
                         floorCollection.Add(Instantiate(Floor, snapPosition(getWorldPoint(), floorYOffset), rotationAngle));
+                        // updates the text of the 
                         updateFloorCountText();
                     }
 
                 }
             }
-
+            // when left mouse goes up change the color of the floor objects that are still the original color
             if (Input.GetMouseButtonUp(0)) {
                 changeColor();
             }
 
         }
 
+        // if chest is selected
         if (chestActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
+                // snaps position to the grid
                 ChestMouse.transform.position = snapPosition(getWorldPoint(), chestYOffset);
                 ChestMouse.transform.rotation = rotationAngle;
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Floor")) {
+                        // places chest on the world and in the chest collection list
                         chestCollection.Add(Instantiate(Chest, snapPosition(getWorldPoint(), chestYOffset), rotationAngle));
                         //Debug.Log("Chest count: " + chestCollection.Count);
                     }
@@ -208,32 +226,32 @@ public class ObjectPlacement : MonoBehaviour {
             }
         }
 
+        // if table is selected
         if (tablesActive) {
             worldPoint = getWorldPoint();
             if (worldPoint != Vector3.zero) {
                 if (table2x2Active) {
-                    temp(Table2x2Mouse, Table2x2, tablesYOffset, table2x2Collection);
+                    placeObjectVariant(Table2x2Mouse, Table2x2, tablesYOffset, table2x2Collection);
                 }
                 if (table2x4Active) {
-                    temp(Table2x4Mouse, Table2x4, tablesYOffset, table2x4Collection);
+                    placeObjectVariant(Table2x4Mouse, Table2x4, tablesYOffset, table2x4Collection);
                 }
                 if (table2x6Active) {
-                    temp(Table2x6Mouse, Table2x6, tablesYOffset, table2x6Collection);
+                    placeObjectVariant(Table2x6Mouse, Table2x6, tablesYOffset, table2x6Collection);
                 }
             }
         }
-
+        // if delete mode is active
         if (deleteActive) {
             getWorldPointDelete();
         }
     }
 
-
-    void temp(GameObject mouseObj, GameObject prefabObj, float yOffset, List<GameObject> collection) {
+    // places tables and chairs variants
+    void placeObjectVariant(GameObject mouseObj, GameObject prefabObj, float yOffset, List<GameObject> collection) {
         mouseObj.transform.position = snapPosition(getWorldPoint(), yOffset);
         mouseObj.transform.rotation = rotationAngle;
         if (Input.GetMouseButtonDown(0)) {
-
             if (validPlace("Floor")) {
                 collection.Add(Instantiate(prefabObj, snapPosition(getWorldPoint(), yOffset), rotationAngle));
             }
@@ -241,16 +259,16 @@ public class ObjectPlacement : MonoBehaviour {
     }
 
     void objectKeyboardListener() {
+        // if user presses r key then it will rotate the objects
         if (Input.GetKeyUp(KeyCode.R)) {
             rotateObjects();
         }
 
-        if (Input.GetKeyUp(KeyCode.P)) {
-            getAverages();
-        }
-
+        // if bulk active is on
         if (bulkActive) {
 
+            // first right click in bulk mode
+            // sets the start position of the bulk mode
             if (Input.GetMouseButtonDown(1) && bulkCicks == 0) {
                 startingPoint = snapPosition(getWorldPoint(), bulkRaycastLineHeight);
                 // Debug.Log("First Click" + startingPoint.ToString());
@@ -259,20 +277,26 @@ public class ObjectPlacement : MonoBehaviour {
                 bulkCicks = 1;
             }
 
+            // after first line point has been placed
             if (bulkCicks == 1) {
 
                 endingPoint = snapPosition(getWorldPoint(), bulkRaycastLineHeight);
                 line.SetPosition(1, endingPoint);
+
+                // checls to see if two points are on same x or z axis and changtes color to green for valid and red for invalid
                 if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
                     line.material = valid;
                 } else {
                     line.material = notValid;
                 }
 
+                // when pressed
                 if (Input.GetMouseButtonDown(1)) {
 
+                    // if it is a straight line then it will place the objects
                     if (isStraightLine()) {
 
+                        // if is on the x axis it will place objects on the x axis
                         if (isStraightXLine().valid) {
                             int lowest = Math.Min(isStraightXLine().startZ, isStraightXLine().endZ);
                             int highest = Math.Max(isStraightXLine().startZ, isStraightXLine().endZ);
@@ -282,6 +306,7 @@ public class ObjectPlacement : MonoBehaviour {
                                     for (int i = lowest; lowest <= highest; lowest++) {
                                         floorCollection.Add(Instantiate(Floor, new Vector3(startingPoint.x, floorYOffset, lowest), rotationAngle));
                                     }
+                                    //resets the bulk line after objects placed
                                     resetBulkLine();
                                     updateFloorCountText();
                                 }
@@ -324,12 +349,14 @@ public class ObjectPlacement : MonoBehaviour {
                     }
                 }
             }
+            // chnages color of the floors that have not been changed to current floor color on letting go of right click
             if (Input.GetMouseButtonUp(1)) {
                 changeColor();
             }
         }
     }
 
+    // resets bulk lines
     void resetBulkLine() {
         bulkCicks = 0;
         startingPoint = Vector3.zero;
@@ -337,6 +364,7 @@ public class ObjectPlacement : MonoBehaviour {
         line.SetPosition(0, startingPoint);
         line.SetPosition(1, startingPoint);
     }
+
     bool isStraightLine() {
         if ((int)startingPoint.x == (int)endingPoint.x || (int)startingPoint.z == (int)endingPoint.z) {
             return true;
@@ -345,6 +373,7 @@ public class ObjectPlacement : MonoBehaviour {
         }
     }
 
+    // checks if the line is straight on the x axis
     (bool valid, int startZ, int endZ) isStraightXLine() {
         if ((int)startingPoint.x == (int)endingPoint.x) {
             return (true, (int)startingPoint.z, (int)endingPoint.z);
@@ -353,6 +382,7 @@ public class ObjectPlacement : MonoBehaviour {
         }
     }
 
+    // checks if the line is straight on the z axis
     (bool valid, int startX, int endX) isStraightZLine() {
         if ((int)startingPoint.z == (int)endingPoint.z) {
             return (true, (int)startingPoint.x, (int)endingPoint.x);
@@ -361,6 +391,7 @@ public class ObjectPlacement : MonoBehaviour {
         }
     }
 
+    // gets the world point of the mousse
     public Vector3 getWorldPoint() {
         if (EventSystem.current.IsPointerOverGameObject())
             return Vector3.zero;
@@ -375,6 +406,7 @@ public class ObjectPlacement : MonoBehaviour {
         return Vector3.zero;
     }
 
+    // gets world point of the mouse and delete object when left clicks
     public void getWorldPointDelete() {
 
         Camera cam = GetComponent<Camera>();
@@ -417,10 +449,13 @@ public class ObjectPlacement : MonoBehaviour {
 
     }
 
+    //remvoe "prefab(clone)" from the gameobject name
     String removePrefabClone(String word) {
         return word.Replace("Prefab(Clone)", "");
     }
 
+    // checks to see if valid place to place objext
+    // example validPlace(floor) checks to see if pointing at floor
     bool validPlace(String validObject) {
         Camera cam = GetComponent<Camera>();
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -437,6 +472,7 @@ public class ObjectPlacement : MonoBehaviour {
 
     }
 
+    // snaps mouse posistion on a grid 
     public Vector3 snapPosition(Vector3 original, float yOffset) {
         Vector3 snapped;
         snapped.x = Mathf.Floor(original.x + 0.5f);
@@ -445,6 +481,7 @@ public class ObjectPlacement : MonoBehaviour {
         return snapped;
     }
 
+    //disables all objects to make sure only one is active at a time
     void disableAll() {
         chestActive = false;
         wallActive = false;
@@ -454,6 +491,7 @@ public class ObjectPlacement : MonoBehaviour {
         deleteActive = false;
     }
 
+    // resets the mouse objext so they do not stay on the mouse after another has been activated
     void resetObjectPositions() {
         WallMouse.transform.position = new Vector3(10, -10, 10);
         ChestMouse.transform.position = new Vector3(10, -10, 10);
@@ -464,6 +502,7 @@ public class ObjectPlacement : MonoBehaviour {
         Table2x6Mouse.transform.position = new Vector3(10, -10, 10);
     }
 
+    // deletes object from list and destory it from the simulation and memory
     void deleteObjectFromList(List<GameObject> list, GameObject delObj) {
         for (int index = 0; index < list.Count; index++) {
             if (list[index].GetInstanceID() == delObj.GetInstanceID()) {
@@ -585,20 +624,20 @@ public class ObjectPlacement : MonoBehaviour {
     void switchFloorSettings(int choice) {
         switch (choice) {
             case 0:
-                currentColor = new Color(0.36f, 0.25f, 0.2f);
-                changeFloorMouseColor(FloorMouse, currentColor);
+                floorCurrentColor = new Color(0.36f, 0.25f, 0.2f);
+                changeFloorMouseColor(FloorMouse, floorCurrentColor);
                 break;
             case 1:
-                currentColor = new Color(0f, 0.39f, 0f);
-                changeFloorMouseColor(FloorMouse, currentColor);
+                floorCurrentColor = new Color(0f, 0.39f, 0f);
+                changeFloorMouseColor(FloorMouse, floorCurrentColor);
                 break;
             case 2:
-                currentColor = new Color(1f, 0.4f, 0f);
-                changeFloorMouseColor(FloorMouse, currentColor);
+                floorCurrentColor = new Color(1f, 0.4f, 0f);
+                changeFloorMouseColor(FloorMouse, floorCurrentColor);
                 break;
             case 3:
-                currentColor = new Color(1f, 0f, 0f);
-                changeFloorMouseColor(FloorMouse, currentColor);
+                floorCurrentColor = new Color(1f, 0f, 0f);
+                changeFloorMouseColor(FloorMouse, floorCurrentColor);
                 break;
             default:
                 break;
@@ -642,8 +681,8 @@ public class ObjectPlacement : MonoBehaviour {
     void changeColor() {
         int numberOfFloors = floorCollection.Count;
         for (int i = numberOfFloors - 1; i > 0; i--) {
-            if (floorCollection[i].GetComponent<Renderer>().material.color != currentColor) {
-                floorCollection[i].GetComponent<Renderer>().material.color = currentColor;
+            if (floorCollection[i].GetComponent<Renderer>().material.color != floorCurrentColor) {
+                floorCollection[i].GetComponent<Renderer>().material.color = floorCurrentColor;
             } else {
                 break;
             }

@@ -20,6 +20,7 @@ public class Cleaning : MonoBehaviour {
     int cleaningPoints;
     float floorLevelMultiplier = 1f;
 
+    // Declaration and initialization of the floor tile color values which is a brown color
     Color currentColor = new Color(0.36f, 0.25f, 0.2f);
     bool hasStarted = false;
 
@@ -28,17 +29,26 @@ public class Cleaning : MonoBehaviour {
     public TMP_Dropdown speedDropdown, floorDropdown;
     public Button startButton, stopButton;
 
+    // cleaining reduction is the value that is subtracted from the floor tile's dirtiness
     int cleaningReduction;
+    // cleanBaseRate is multiplied with the floor multiplier to determine the cleaningReduction above
     int cleanBaseRate = 50;
 
     // Start is called before the first frame update
     // Will set the color properties of the floor tiles at the start of the program
     void Start() {
+        // sets the cleaning points to the starting points 
         cleaningPoints = startingPointsBase;
+        // sets the cleaningreduction rate
         cleaningReduction = simulationSpeed * cleanBaseRate;
+        // sets the color of the floor tiles to the default color
         gameObject.GetComponent<Renderer>().material.color = currentColor;
+
+        // adds listeners to the start and stop buttons
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
+
+        // sets listeners to the  for the speed dropdown and floor dropdown
         speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             SpeedValueChanged(speedDropdown);
         });
@@ -47,20 +57,19 @@ public class Cleaning : MonoBehaviour {
         });
     }
 
-    // Update is called once per frame
-    void Update() {
-
-    }
-
     // Will handle the changing of the floor color according to collision with the roVac
     void OnTriggerStay(Collider collision) {
 
+        // if statement to check if the roVac sim has started
         if (hasStarted) {
 
+            // checks to see if cleaning tile touches the vaccum object
             if (collision.gameObject.tag == "Vaccum") {
+                // reduces the cleaning points by the math we did below
                 if (cleaningPoints > 0)
                     cleaningPoints = cleaningPoints - cleaningReduction;
 
+                // if it gets below zero dirtiness then it will result to 0 for data consistency
                 if (cleaningPoints < 0)
                     cleaningPoints = 0;
 
@@ -72,10 +81,12 @@ public class Cleaning : MonoBehaviour {
     }
 
     // Will be used to find the percentage of the floor that was cleaned
+    // called from other classes for data retreival
     public float getPercentage() {
         return Mathf.Abs((float)cleaningPoints / (float)startingPoints);
     }
 
+    // takes the color between two colors depending on the percentage of the floor that was cleaned
     Color getNewColor() {
         return Color.Lerp(Color.white, currentColor, getPercentage());
     }
@@ -100,9 +111,11 @@ public class Cleaning : MonoBehaviour {
                 break;
         }
 
+        // changes reduction rate from the similation speed to balance the extra speed
         cleaningReduction = simulationSpeed * cleanBaseRate;
     }
 
+    // handles the multiplier for the floor tiles
     void switchFloorSettings(int choice) {
         switch (choice) {
             case 0:
@@ -125,17 +138,20 @@ public class Cleaning : MonoBehaviour {
                 break;
         }
 
+        // sets the new starting points cleaning values depening on the floor chosen
         startingPoints = (int)(startingPointsBase * floorLevelMultiplier);
         cleaningPoints = startingPoints;
+        // changes color of floor depending on the floor chosen
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
 
-    // Will implement changes to the speed of the simulation when selected by the user
+    // handles the change in floor dropdown 
     void SpeedValueChanged(TMP_Dropdown change) {
         int speedChoice = change.value;
         switchSimulationSpeed(speedChoice);
     }
 
+    // handles the change in floor dropdown 
     void FloorValueChanged(TMP_Dropdown change) {
         switchFloorSettings(change.value);
     }
@@ -144,11 +160,9 @@ public class Cleaning : MonoBehaviour {
         hasStarted = true;
     }
 
-    // public void resetFloor() {
-    //     cleaningPoints = startingPoints;
-    //     gameObject.GetComponent<Renderer>().material.color = currentColor;
-    // }
-
+    // resets the floor tiles to the default color and original valie
+    // gets triggered when the stop button is pressed and/or when the similation is over
+    // it is called from other classes so we made it public
     public void stopAction() {
         hasStarted = false;
         cleaningPoints = startingPoints;
