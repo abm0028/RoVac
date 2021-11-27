@@ -66,12 +66,23 @@ public class ObjectPlacement : MonoBehaviour {
     public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton;
     public TMP_Dropdown floorDropdown, tableDropdown;
     public TMP_Text floorCountText;
+    string path;
 
-    // string path = $"{Application.dataPath}/StreamingAssets/default.txt";
-    string path = @"Assets/Resources/default.txt";
+    string setPath(string path) {
+
+        if (Application.isEditor) {
+            Debug.Log("isEditor");
+            return $@"Assets/Resources/{path}";
+        } else {
+            Debug.Log("isNOT");
+            return $"{Application.dataPath}/StreamingAssets/{path}";
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start() {
+        path = setPath("default.txt");
         worldPoint = getWorldPoint();
 
         // adds the listeneres to the UI elements
@@ -529,6 +540,9 @@ public class ObjectPlacement : MonoBehaviour {
         eraseObjects(floorCollection);
         eraseObjects(wallCollection);
         eraseObjects(chestCollection);
+
+        Debug.Log("Reading file");
+        Debug.Log(path);
 
         using (StreamReader sr = File.OpenText(path)) {
             while (!sr.EndOfStream) {

@@ -74,14 +74,26 @@ public class RovacManager : MonoBehaviour {
 
     // Variables specific to the random algorithm
 
-    string path = @"Assets/Resources/records.csv";
+    string path;
 
     string IDName = "ID";
+
+    string setPath(string path) {
+
+        if (Application.isEditor) {
+            Debug.Log("isEditor");
+            return $@"Assets/Resources/{path}";
+        } else {
+            Debug.Log("isNOT");
+            return $"{Application.dataPath}/StreamingAssets/{path}";
+        }
+    }
 
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
 
+        path = setPath("records.csv");
         rovacPosition = transform.position;
 
         rb = this.GetComponent<Rigidbody>();
@@ -263,7 +275,6 @@ public class RovacManager : MonoBehaviour {
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
         timeFrameCounter++;
         if (timeFrameCounter >= timeGoal) {
-            recordData();
             Debug.Log("Time Stopped");
             panel.GetComponent<UIManager>().stopAction();
             rb.velocity = Vector3.zero;

@@ -8,6 +8,7 @@ TagManager:
   - Vaccum
   - Floor
   - Passable
+  - Records
   layers:
   - Default
   - TransparentFX
