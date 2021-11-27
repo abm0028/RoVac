@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class DataDisplay : MonoBehaviour {
 
-    string path = @"Assets/Resources/records.csv";
+    string path;
     public TMP_Text template;
     public GameObject parentUI;
     int startingY = 65;
@@ -18,8 +18,20 @@ public class DataDisplay : MonoBehaviour {
 
     Stack records = new Stack();
 
+    string setPath(string path) {
+
+        if (Application.isEditor) {
+            Debug.Log("isEditor");
+            return $@"Assets/Resources/{path}";
+        } else {
+            Debug.Log("isNOT");
+            return $"{Application.dataPath}/StreamingAssets/{path}";
+        }
+    }
+
     // Start is called before the first frame update
     void Start() {
+        path = setPath("records.csv");
         readFile();
         displayRecords();
         refreshButton.onClick.AddListener(refreshAction);
