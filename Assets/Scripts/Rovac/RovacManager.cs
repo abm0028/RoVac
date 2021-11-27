@@ -136,6 +136,18 @@ public class RovacManager : MonoBehaviour {
                     cooldown = true;
                 }
             }
+        
+            if (wallfollowActive)
+            {
+                Ray ray = new Ray(transform.position, transform.forward);
+                RaycastHit hitInfo;
+                float angle = UnityEngine.Random.Range(-1, 1)*45;
+
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
+                    float randRotation = transform.rotation.y;
+                    transform.Rotate(0, angle, 0);
+                }
+            }
         }
 
         if (Input.GetKeyUp(KeyCode.P)) {
@@ -166,13 +178,14 @@ public class RovacManager : MonoBehaviour {
                 randomAlgo();
             }
 
+            if(wallfollowActive){
+                wallfollowAlgo();
+            }
+
             timeManager();
         }
 
     }
-
-    /*------------------------------------------ Random Algo ------------------------------------------*/
-
 
     // Will reset all algorithm bools to prepare for changing the algorithm
     void resetActive() {
@@ -182,6 +195,8 @@ public class RovacManager : MonoBehaviour {
         spiralActive = false;
         randomActive = false;
     }
+
+    /*------------------------------------------ Random Algo ------------------------------------------*/
 
     // Random Algorithm and instructions for object collision
     void randomAlgo() {
@@ -202,7 +217,6 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-
     // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
     float normalizeDegree(float degree) {
 
@@ -211,6 +225,13 @@ public class RovacManager : MonoBehaviour {
         } else {
             return degree;
         }
+    }
+
+    /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
+
+    void wallfollowAlgo()
+    {
+        rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
     }
 
     /*------------------------------------------ Sprial Algo ------------------------------------------*/
