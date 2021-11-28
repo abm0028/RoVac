@@ -137,13 +137,8 @@ public class RovacManager : MonoBehaviour {
                 }
             }
         
-<<<<<<< Updated upstream
             if (wallfollowActive)
             {
-=======
-            if (wallfollowActive) {
-
->>>>>>> Stashed changes
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
                 float angle = UnityEngine.Random.Range(-1, 1)*45;
@@ -208,7 +203,7 @@ public class RovacManager : MonoBehaviour {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
     }
 
-    // Will handle the turning of the roVac when the random algorithm is active
+    // Will handle the turning of the roVac when the random algoritm is active
     float randomTurn(float currentRotation) {
 
         float start = currentRotation + 180;
