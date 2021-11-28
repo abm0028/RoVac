@@ -111,11 +111,11 @@ public class UIManager : MonoBehaviour {
     }
 
     void saveAction() {
-        // Debug.Log("save");
+
     }
 
     void loadAction() {
-        // Debug.Log("load");
+
     }
 
     void chairAction() {

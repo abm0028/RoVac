@@ -73,7 +73,6 @@ public class Cleaning : MonoBehaviour {
                 if (cleaningPoints < 0)
                     cleaningPoints = 0;
 
-                // Debug.Log($"Max: {startingPoints} ||| Current points: {cleaningPoints} ||| PCT: %: {getPercentage()}");
                 gameObject.GetComponent<Renderer>().material.color = getNewColor();
             }
         }

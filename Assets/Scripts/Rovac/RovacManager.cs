@@ -81,10 +81,10 @@ public class RovacManager : MonoBehaviour {
     string setPath(string path) {
 
         if (Application.isEditor) {
-            Debug.Log("isEditor");
+
             return $@"Assets/Resources/{path}";
         } else {
-            Debug.Log("isNOT");
+
             return $"{Application.dataPath}/StreamingAssets/{path}";
         }
     }
@@ -180,7 +180,6 @@ public class RovacManager : MonoBehaviour {
 
             timeManager();
         }
-
     }
 
     /*------------------------------------------ Random Algo ------------------------------------------*/
@@ -229,7 +228,6 @@ public class RovacManager : MonoBehaviour {
 
     // manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
-        // Debug.Log($"Counter: {frameSpiralCounter} || Goal: {goal}");
         if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;
@@ -273,9 +271,7 @@ public class RovacManager : MonoBehaviour {
     void timeManager() {
         timeFrameCounter = timeFrameCounter + frameInterval;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
-        timeFrameCounter++;
         if (timeFrameCounter >= timeGoal) {
-            Debug.Log("Time Stopped");
             panel.GetComponent<UIManager>().stopAction();
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -313,8 +309,6 @@ public class RovacManager : MonoBehaviour {
 
         createFile();
         appendToFile();
-
-        Debug.Log("Recorded");
     }
 
     void createFile() {
@@ -358,7 +352,6 @@ public class RovacManager : MonoBehaviour {
     void inputAction(string value) {
         // To get the text
         IDName = value;
-        Debug.Log(IDName);
 
     }
 

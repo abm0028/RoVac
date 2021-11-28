@@ -21,10 +21,9 @@ public class DataDisplay : MonoBehaviour {
     string setPath(string path) {
 
         if (Application.isEditor) {
-            Debug.Log("isEditor");
+
             return $@"Assets/Resources/{path}";
         } else {
-            Debug.Log("isNOT");
             return $"{Application.dataPath}/StreamingAssets/{path}";
         }
     }
@@ -41,7 +40,6 @@ public class DataDisplay : MonoBehaviour {
     void Update() {
         if (Input.GetKeyUp(KeyCode.C)) {
             readFile();
-            Debug.Log("Read file");
         }
 
     }
@@ -93,8 +91,6 @@ public class DataDisplay : MonoBehaviour {
         deleteRecordsFromScreen();
         readFile();
         displayRecords();
-        Debug.Log($"textRecords: {textRecords.Count}");
-        Debug.Log($"records stack: {records.Count}");
     }
 
 

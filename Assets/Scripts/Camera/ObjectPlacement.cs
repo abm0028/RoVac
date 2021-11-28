@@ -71,10 +71,8 @@ public class ObjectPlacement : MonoBehaviour {
     string setPath(string path) {
 
         if (Application.isEditor) {
-            Debug.Log("isEditor");
             return $@"Assets/Resources/{path}";
         } else {
-            Debug.Log("isNOT");
             return $"{Application.dataPath}/StreamingAssets/{path}";
         }
     }
@@ -175,7 +173,6 @@ public class ObjectPlacement : MonoBehaviour {
                 if (Input.GetMouseButtonDown(0)) {
                     if (validPlace("Plane")) {
                         wallCollection.Add(Instantiate(Wall, snapPosition(getWorldPoint(), wallYOffset), rotationAngle));
-                        //Debug.Log("Wall count: " + wallCollection.Count);
                     }
                 }
             }
@@ -218,7 +215,6 @@ public class ObjectPlacement : MonoBehaviour {
                     if (validPlace("Floor")) {
                         // places chest on the world and in the chest collection list
                         chestCollection.Add(Instantiate(Chest, snapPosition(getWorldPoint(), chestYOffset), rotationAngle));
-                        //Debug.Log("Chest count: " + chestCollection.Count);
                     }
                 }
             }
@@ -282,7 +278,6 @@ public class ObjectPlacement : MonoBehaviour {
             // sets the start position of the bulk mode
             if (Input.GetMouseButtonDown(1) && bulkCicks == 0) {
                 startingPoint = snapPosition(getWorldPoint(), bulkRaycastLineHeight);
-                // Debug.Log("First Click" + startingPoint.ToString());
                 line.SetPosition(0, startingPoint);
                 line.SetPosition(1, startingPoint);
                 bulkCicks = 1;
@@ -428,7 +423,7 @@ public class ObjectPlacement : MonoBehaviour {
             if (Physics.Raycast(ray, out hit)) {
                 GameObject delObject = hit.collider.gameObject;
                 String objType = removePrefabClone(delObject.name);
-                Debug.Log(objType);
+
                 if (objType != "Plane") {
                     switch (objType) {
                         case "Floor":
@@ -442,7 +437,7 @@ public class ObjectPlacement : MonoBehaviour {
                             deleteObjectFromList(wallCollection, delObject);
                             break;
                         case "Table2x2":
-                            Debug.Log("Here");
+
                             deleteObjectFromList(table2x2Collection, delObject);
                             break;
                         case "Table2x4":
@@ -541,8 +536,7 @@ public class ObjectPlacement : MonoBehaviour {
         eraseObjects(wallCollection);
         eraseObjects(chestCollection);
 
-        Debug.Log("Reading file");
-        Debug.Log(path);
+
 
         using (StreamReader sr = File.OpenText(path)) {
             while (!sr.EndOfStream) {
