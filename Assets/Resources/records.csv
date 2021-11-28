@@ -6,6 +6,7 @@ Date, Algorithm, Algorithm Version, ID, Cleaning Pct, Time remaining
 11-23-2021 20:20:05, Random, Random 1.0, ID, 57%, 80 minutes
 11-23-2021 20:20:08, Random, Random 1.0, ID, 57%, 75 minutes
 11-23-2021 20:20:11, Random, Random 1.0, ID, 57%, 70 minutes
+<<<<<<< Updated upstream
 11-23-2021 20:20:17, Random, Random 1.0, ID, 59%, 61 minutes
 11-23-2021 20:20:21, Random, Random 1.0, ID, 62%, 53 minutes
 11-23-2021 20:20:39, Random, Random 1.0, ID, 74%, 24 minutes
@@ -35,3 +36,8 @@ Date, Algorithm, Algorithm Version, ID, Cleaning Pct, Time remaining
 11-25-2021 17:02:02, Random, Random 1.0,ipo, 10%, 146 minutes
 11-25-2021 17:02:32, Random, Random 1.0,48, 4%, 149 minutes
 11-25-2021 17:03:25, Random, Random 1.0,tester, 6%, 148 minutes
+=======
+11-26-2021 13:51:07, Random, Random 1.0,ID, 81%, 0 minutes
+11-27-2021 21:29:49, Random, Random 1.0,ID, 2%, 149 minutes
+11-27-2021 21:57:35, Wall-follow, Wall-follow 1.0,ID, 19%, 133 minutes
+>>>>>>> Stashed changes
