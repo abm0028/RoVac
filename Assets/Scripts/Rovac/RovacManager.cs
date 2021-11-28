@@ -74,14 +74,26 @@ public class RovacManager : MonoBehaviour {
 
     // Variables specific to the random algorithm
 
-    string path = @"Assets/Resources/records.csv";
+    string path;
 
     string IDName = "ID";
+
+    string setPath(string path) {
+
+        if (Application.isEditor) {
+
+            return $@"Assets/Resources/{path}";
+        } else {
+
+            return $"{Application.dataPath}/StreamingAssets/{path}";
+        }
+    }
 
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
 
+        path = setPath("records.csv");
         rovacPosition = transform.position;
 
         rb = this.GetComponent<Rigidbody>();
@@ -184,7 +196,6 @@ public class RovacManager : MonoBehaviour {
 
             timeManager();
         }
-
     }
 
     // Will reset all algorithm bools to prepare for changing the algorithm
@@ -238,7 +249,6 @@ public class RovacManager : MonoBehaviour {
 
     // manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
-        // Debug.Log($"Counter: {frameSpiralCounter} || Goal: {goal}");
         if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;
@@ -282,10 +292,7 @@ public class RovacManager : MonoBehaviour {
     void timeManager() {
         timeFrameCounter = timeFrameCounter + frameInterval;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
-        timeFrameCounter++;
         if (timeFrameCounter >= timeGoal) {
-            recordData();
-            Debug.Log("Time Stopped");
             panel.GetComponent<UIManager>().stopAction();
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -323,8 +330,6 @@ public class RovacManager : MonoBehaviour {
 
         createFile();
         appendToFile();
-
-        Debug.Log("Recorded");
     }
 
     void createFile() {
@@ -368,7 +373,6 @@ public class RovacManager : MonoBehaviour {
     void inputAction(string value) {
         // To get the text
         IDName = value;
-        Debug.Log(IDName);
 
     }
 

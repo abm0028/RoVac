@@ -5,10 +5,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SplashMenu : MonoBehaviour {
-    public Button exitButton;
+    public Button exitButton, scoresButton;
 
     void Start() {
         exitButton.onClick.AddListener(exitAction);
+        scoresButton.onClick.AddListener(scoresAction);
     }
 
     public void Play() {
@@ -17,5 +18,13 @@ public class SplashMenu : MonoBehaviour {
 
     void exitAction() {
         Application.Quit();
+    }
+
+    void scoresAction() {
+
+    }
+
+    void deleteRecordsFromScreen() {
+        //
     }
 }

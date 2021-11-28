@@ -7,6 +7,11 @@ public class CameraMovement : MonoBehaviour {
     float wheelSpeed = 60.0f;
     float rotateSpeed = 30.0f;
 
+    void Start() {
+        transform.position = new Vector3(45, 25, 45);
+    }
+
+
     void Update() {
         // Move Right
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
@@ -30,9 +35,8 @@ public class CameraMovement : MonoBehaviour {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
         {
             transform.Translate(new Vector3(0, 0, wheelSpeed * Time.deltaTime));
-        }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
-        {
+        } else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
+          {
             transform.Translate(new Vector3(0, 0, -wheelSpeed * Time.deltaTime));
         }
 
@@ -44,6 +48,8 @@ public class CameraMovement : MonoBehaviour {
         // Rotate Camera right
         if (Input.GetKey(KeyCode.E)) {
             transform.Rotate(new Vector3(0, 0, -rotateSpeed * Time.deltaTime));
-        } 
+        }
     }
+
+
 }
