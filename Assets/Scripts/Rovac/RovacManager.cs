@@ -65,14 +65,15 @@ public class RovacManager : MonoBehaviour {
 
     // Declaration and initialization of variables used in the roVac pathing algorithms
 
+    // Variables used for snaking algorithm
+    int frameSnakingCounter = 0;
 
-    // variables used for spiral algorithms
+    // Variables used for spiral algorithm
     int frameSpiralCounter = 0;
 
     int turnIndex = 1;
-    int turnGoal = 2;
 
-    // Variables specific to the random algorithm
+    int turnGoal = 2;
 
     string path;
 
@@ -123,12 +124,10 @@ public class RovacManager : MonoBehaviour {
     // Will be used to check the raycast collisions when the random algoritm is active
     void Update() {
         if (hasStarted) {
-            /* Raycast for random algorithm */
+            // Raycast for random algorithm
             if (randomActive) {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
-
-
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall") {
                     float randRotation = transform.rotation.y;
@@ -148,9 +147,22 @@ public class RovacManager : MonoBehaviour {
                     cooldown = true;
                 }
             }
+
+            if (snakingActive) {
+
+                Ray ray = new Ray(transform.position, transform.forward);
+                RaycastHit hitInfo;
+
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
+                    Debug.Log("i hit a wall");
+                    transform.Rotate(0, 90, 0);
+                    frameSnakingCounter = 0;
+                    resetSnakingTimers();
+                }
+            }
         
-            if (wallfollowActive)
-            {
+            if (wallfollowActive) {
+                
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
                 float angle = UnityEngine.Random.Range(-1, 1)*45;
@@ -188,6 +200,10 @@ public class RovacManager : MonoBehaviour {
 
             if (randomActive) {
                 randomAlgo();
+            }
+
+            if(snakingActive){
+                snakingAlgo();
             }
 
             if(wallfollowActive){
@@ -238,6 +254,39 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
+    /*------------------------------------------ Snaking Algo -----------------------------------------*/
+
+    void snakingAlgo() {
+
+        rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
+                    
+        switch (simulationSpeed) {
+            case 1:
+                snakingTurnManager(ref framegoal_1x);
+                break;
+            case 50:
+                snakingTurnManager(ref framegoal_50x);
+                break;
+            case 100:
+                snakingTurnManager(ref framegoal_100x);
+                break;
+            default:
+                break;
+            }
+    }
+
+    void snakingTurnManager(ref int goal) {
+        
+        if (frameSnakingCounter == goal) {
+            transform.Rotate(0, 90, 0);
+            Debug.Log("turning back");
+            frameSnakingCounter = 0;
+        }
+        else {
+            frameSnakingCounter++;
+        }
+    }
+
     /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
 
     void wallfollowAlgo()
@@ -247,8 +296,9 @@ public class RovacManager : MonoBehaviour {
 
     /*------------------------------------------ Sprial Algo ------------------------------------------*/
 
-    // manages the speed and intervals of the spirals
+    // Manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
+        
         if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;
@@ -319,6 +369,12 @@ public class RovacManager : MonoBehaviour {
     }
 
     void resetSpiralTimers() {
+        framegoal_1x = framegoal_1xStartingPoint;
+        framegoal_50x = framegoal_50xStartingPoint;
+        framegoal_100x = framegoal_100xStartingPoint;
+    }
+
+    void resetSnakingTimers() {
         framegoal_1x = framegoal_1xStartingPoint;
         framegoal_50x = framegoal_50xStartingPoint;
         framegoal_100x = framegoal_100xStartingPoint;
