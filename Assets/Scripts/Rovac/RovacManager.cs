@@ -151,17 +151,17 @@ public class RovacManager : MonoBehaviour {
                 RaycastHit hitInfo;
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
-                    
+
                     float currentFacing = transform.rotation.y;
                     transform.Rotate(0, snakingTurn(currentFacing), 0);
                 }
             }
-        
+
             if (wallfollowActive) {
-                
+
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
-                float angle = UnityEngine.Random.Range(-1, 1)*45;
+                float angle = UnityEngine.Random.Range(-1, 1) * 45;
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
                     transform.Rotate(0, angle, 0);
@@ -197,11 +197,11 @@ public class RovacManager : MonoBehaviour {
                 randomAlgo();
             }
 
-            if(snakingActive){
+            if (snakingActive) {
                 snakingAlgo();
             }
 
-            if(wallfollowActive){
+            if (wallfollowActive) {
                 wallfollowAlgo();
             }
 
@@ -261,7 +261,7 @@ public class RovacManager : MonoBehaviour {
     float snakingTurn(float currentRotation) {
 
         return currentRotation + 190;
- 
+
     }
 
     /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
@@ -275,7 +275,7 @@ public class RovacManager : MonoBehaviour {
 
     // Manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
-        
+
         if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;

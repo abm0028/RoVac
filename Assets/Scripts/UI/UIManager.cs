@@ -56,6 +56,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(false);
         chairDropdown.gameObject.SetActive(false);
         IDField.gameObject.SetActive(false);
+        menuButton.gameObject.SetActive(false);
         stopButton.gameObject.SetActive(true);
 
         this.gameObject.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -81,6 +82,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(true);
         chairDropdown.gameObject.SetActive(true);
         IDField.gameObject.SetActive(true);
+        menuButton.gameObject.SetActive(true);
         stopButton.gameObject.SetActive(false);
         this.gameObject.GetComponent<Image>().color = new Color(0.247f, 0.247f, 0.247f, 1.0f);
     }
