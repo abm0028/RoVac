@@ -117,11 +117,8 @@ public class RovacManager : MonoBehaviour {
         frameInterval = 1 * simulationSpeed;
     }
 
-
-
-
     // Update is called once per frame
-    // Will be used to check the raycast collisions when the random algoritm is active
+    // Will be used to check the raycast collisions when the random algorithm is active
     void Update() {
         if (hasStarted) {
             // Raycast for random algorithm
@@ -386,7 +383,7 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-    // convert float to percentage
+    // Convert float to percentage
     string convertToPercentage(float value) {
         double rounded = Math.Round(value, 2);
         return $"{rounded * 100}%";
