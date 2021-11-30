@@ -9,6 +9,7 @@ TagManager:
   - Floor
   - Passable
   - Records
+  - OuterVac
   layers:
   - Default
   - TransparentFX

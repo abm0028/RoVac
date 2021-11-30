@@ -30,9 +30,13 @@ public class Cleaning : MonoBehaviour {
     public Button startButton, stopButton;
 
     // cleaining reduction is the value that is subtracted from the floor tile's dirtiness
-    int cleaningReduction;
+    int cleaningReductionInner;
+    // cleaining reduction is the value that is subtracted from the floor tile's dirtiness
+    int cleaningReductionOuter;
     // cleanBaseRate is multiplied with the floor multiplier to determine the cleaningReduction above
-    int cleanBaseRate = 50;
+    int cleanBaseRateInner = 50;
+    // cleanBaseRate is multiplied with the floor multiplier to determine the cleaningReduction above
+    int cleanBaseRateOuter = 50;
 
     // Start is called before the first frame update
     // Will set the color properties of the floor tiles at the start of the program
@@ -40,7 +44,7 @@ public class Cleaning : MonoBehaviour {
         // sets the cleaning points to the starting points 
         cleaningPoints = startingPointsBase;
         // sets the cleaningreduction rate
-        cleaningReduction = simulationSpeed * cleanBaseRate;
+        cleaningReductionInner = simulationSpeed * cleanBaseRateInner;
         // sets the color of the floor tiles to the default color
         gameObject.GetComponent<Renderer>().material.color = currentColor;
 
@@ -67,7 +71,18 @@ public class Cleaning : MonoBehaviour {
             if (collision.gameObject.tag == "Vaccum") {
                 // reduces the cleaning points by the math we did below
                 if (cleaningPoints > 0)
-                    cleaningPoints = cleaningPoints - cleaningReduction;
+                    cleaningPoints = cleaningPoints - cleaningReductionInner;
+
+                // if it gets below zero dirtiness then it will result to 0 for data consistency
+                if (cleaningPoints < 0)
+                    cleaningPoints = 0;
+
+                gameObject.GetComponent<Renderer>().material.color = getNewColor();
+            }
+            if (collision.gameObject.tag == "OuterVac") {
+                // reduces the cleaning points by the math we did below
+                if (cleaningPoints > 0)
+                    cleaningPoints = cleaningPoints - cleaningReductionOuter;
 
                 // if it gets below zero dirtiness then it will result to 0 for data consistency
                 if (cleaningPoints < 0)
@@ -95,15 +110,18 @@ public class Cleaning : MonoBehaviour {
 
         switch (choice) {
             case 0:
-                cleanBaseRate = 50;
+                cleanBaseRateInner = 50;
+                cleanBaseRateOuter = 35;
                 simulationSpeed = 1;
                 break;
             case 1:
-                cleanBaseRate = 150;
+                cleanBaseRateInner = 150;
+                cleanBaseRateOuter = 105;
                 simulationSpeed = 50;
                 break;
             case 2:
-                cleanBaseRate = 300;
+                cleanBaseRateInner = 300;
+                cleanBaseRateOuter = 210;
                 simulationSpeed = 100;
                 break;
             default:
@@ -111,7 +129,9 @@ public class Cleaning : MonoBehaviour {
         }
 
         // changes reduction rate from the similation speed to balance the extra speed
-        cleaningReduction = simulationSpeed * cleanBaseRate;
+        cleaningReductionInner = simulationSpeed * cleanBaseRateInner;
+        // changes reduction rate from the similation speed to balance the extra speed
+        cleaningReductionOuter = simulationSpeed * cleanBaseRateOuter;
     }
 
     // handles the multiplier for the floor tiles
