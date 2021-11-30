@@ -10,5 +10,12 @@ Date, Algorithm, Algorithm Version, ID, Cleaning Pct, Time remaining
 11-27-2021 21:29:49, Random, Random 1.0,ID, 2%, 149 minutes
 11-29-2021 21:04:50, Random, Random 1.0,ID, 23%, 140 minutes
 11-29-2021 21:12:02, Random, Random 1.0,ID, 70%, 78 minutes
-11-29-2021 22:24:30, Wall-follow, Wall-follow 1.0,ID, 0%, 150 minutes
-11-29-2021 22:24:47, Wall-follow, Wall-follow 1.0,ID, 19%, 139 minutes
+11-29-2021 22:38:21, Snaking, Snaking 1.0,ID, 57%, 70 minutes
+11-29-2021 22:38:42, Wall-follow, Wall-follow 1.0,ID, 26%, 137 minutes
+11-29-2021 22:41:03, Random, Random 1.0,ID, 0%, 150 minutes
+11-29-2021 22:43:33, Random, Random 1.0,ID, 2%, 149 minutes
+11-29-2021 22:48:33, Random, Random 1.0,ID, 6%, 148 minutes
+11-29-2021 22:49:25, Random, Random 1.0,ID, 0%, 150 minutes
+11-29-2021 22:49:46, Spiral, Spiral 1.0,ID, 15%, 143 minutes
+11-29-2021 22:49:57, Spiral, Spiral 1.0,ID, 18%, 137 minutes
+11-29-2021 23:00:48, Snaking, Snaking 1.0,ID, 0%, 150 minutes
