@@ -3,35 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using TMPro;
+using UnityEngine.UI;
 
 public class DataDisplay : MonoBehaviour {
 
-    string path = @"Assets/Resources/records.csv";
+    string path;
     public TMP_Text template;
     public GameObject parentUI;
     int startingY = 65;
     int xPosition = 20;
     int counter = 0;
+    public Button refreshButton;
+    List<GameObject> textRecords = new List<GameObject>();
 
     Stack records = new Stack();
 
+    string setPath(string path) {
+
+        if (Application.isEditor) {
+
+            return $@"Assets/Resources/{path}";
+        } else {
+            return $"{Application.dataPath}/StreamingAssets/{path}";
+        }
+    }
+
     // Start is called before the first frame update
     void Start() {
+        path = setPath("records.csv");
         readFile();
         displayRecords();
+        refreshButton.onClick.AddListener(refreshAction);
     }
 
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyUp(KeyCode.C)) {
             readFile();
-            Debug.Log("Read file");
         }
 
     }
 
     void readFile() {
-
         using (StreamReader sr = File.OpenText(path)) {
             while (!sr.EndOfStream) {
                 string line = sr.ReadLine();
@@ -42,17 +55,12 @@ public class DataDisplay : MonoBehaviour {
             }
             sr.Close();
         }
-
-        foreach (string record in records) {
-            Debug.Log(record);
-        }
-
     }
 
     void displayRecords() {
 
         foreach (string record in records) {
-            if (counter < 8) {
+            if (counter < 6) {
 
                 string[] datapoints = record.Split(',');
                 displayTextValue(20, datapoints[0]);
@@ -66,6 +74,9 @@ public class DataDisplay : MonoBehaviour {
             counter++;
         }
 
+        counter = 0;
+        startingY = 65;
+
     }
 
     void displayTextValue(float xPos, string text) {
@@ -73,6 +84,22 @@ public class DataDisplay : MonoBehaviour {
         TMP_Text newTextBox = Instantiate(template, positon, Quaternion.identity, parentUI.transform);
         newTextBox.GetComponent<RectTransform>().localPosition = positon;
         newTextBox.text = text;
+        textRecords.Add(newTextBox.gameObject);
     }
 
+    void refreshAction() {
+        deleteRecordsFromScreen();
+        readFile();
+        displayRecords();
+    }
+
+
+
+    void deleteRecordsFromScreen() {
+        foreach (GameObject text in textRecords) {
+            Destroy(text);
+        }
+        textRecords.Clear();
+        records.Clear();
+    }
 }

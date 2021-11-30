@@ -3,9 +3,10 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
-    public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton, exitButton, stopButton, startButton;
+    public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton, exitButton, stopButton, startButton, menuButton;
     public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown;
     public TMP_InputField IDField;
     bool bulkActive = false;
@@ -27,6 +28,7 @@ public class UIManager : MonoBehaviour {
         deleteButton.GetComponent<Button>().onClick.AddListener(deleteAction);
         bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
         exitButton.GetComponent<Button>().onClick.AddListener(exitAction);
+        menuButton.GetComponent<Button>().onClick.AddListener(menuAction);
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
 
@@ -104,12 +106,16 @@ public class UIManager : MonoBehaviour {
         Application.Quit();
     }
 
+    void menuAction() {
+        SceneManager.LoadScene(sceneName: "MenuScene");
+    }
+
     void saveAction() {
-        // Debug.Log("save");
+
     }
 
     void loadAction() {
-        // Debug.Log("load");
+
     }
 
     void chairAction() {

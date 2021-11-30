@@ -65,23 +65,36 @@ public class RovacManager : MonoBehaviour {
 
     // Declaration and initialization of variables used in the roVac pathing algorithms
 
+    // Variables used for snaking algorithm
+    int frameSnakingCounter = 0;
 
-    // variables used for spiral algorithms
+    // Variables used for spiral algorithm
     int frameSpiralCounter = 0;
 
     int turnIndex = 1;
+
     int turnGoal = 2;
 
-    // Variables specific to the random algorithm
-
-    string path = @"Assets/Resources/records.csv";
+    string path;
 
     string IDName = "ID";
+
+    string setPath(string path) {
+
+        if (Application.isEditor) {
+
+            return $@"Assets/Resources/{path}";
+        } else {
+
+            return $"{Application.dataPath}/StreamingAssets/{path}";
+        }
+    }
 
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
     void Start() {
 
+        path = setPath("records.csv");
         rovacPosition = transform.position;
 
         rb = this.GetComponent<Rigidbody>();
@@ -111,12 +124,10 @@ public class RovacManager : MonoBehaviour {
     // Will be used to check the raycast collisions when the random algoritm is active
     void Update() {
         if (hasStarted) {
-            /* Raycast for random algorithm */
+            // Raycast for random algorithm
             if (randomActive) {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
-
-
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall") {
                     float randRotation = transform.rotation.y;
@@ -134,6 +145,31 @@ public class RovacManager : MonoBehaviour {
                     frameSpiralCounter = 0;
                     resetSpiralTimers();
                     cooldown = true;
+                }
+            }
+
+            if (snakingActive) {
+
+                Ray ray = new Ray(transform.position, transform.forward);
+                RaycastHit hitInfo;
+
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
+                    Debug.Log("i hit a wall");
+                    transform.Rotate(0, 90, 0);
+                    frameSnakingCounter = 0;
+                    resetSnakingTimers();
+                }
+            }
+        
+            if (wallfollowActive) {
+                
+                Ray ray = new Ray(transform.position, transform.forward);
+                RaycastHit hitInfo;
+                float angle = UnityEngine.Random.Range(-1, 1)*45;
+
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
+                    float randRotation = transform.rotation.y;
+                    transform.Rotate(0, angle, 0);
                 }
             }
         }
@@ -166,13 +202,17 @@ public class RovacManager : MonoBehaviour {
                 randomAlgo();
             }
 
+            if(snakingActive){
+                snakingAlgo();
+            }
+
+            if(wallfollowActive){
+                wallfollowAlgo();
+            }
+
             timeManager();
         }
-
     }
-
-    /*------------------------------------------ Random Algo ------------------------------------------*/
-
 
     // Will reset all algorithm bools to prepare for changing the algorithm
     void resetActive() {
@@ -182,6 +222,8 @@ public class RovacManager : MonoBehaviour {
         spiralActive = false;
         randomActive = false;
     }
+
+    /*------------------------------------------ Random Algo ------------------------------------------*/
 
     // Random Algorithm and instructions for object collision
     void randomAlgo() {
@@ -202,7 +244,6 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-
     // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
     float normalizeDegree(float degree) {
 
@@ -213,11 +254,51 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
+    /*------------------------------------------ Snaking Algo -----------------------------------------*/
+
+    void snakingAlgo() {
+
+        rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
+                    
+        switch (simulationSpeed) {
+            case 1:
+                snakingTurnManager(ref framegoal_1x);
+                break;
+            case 50:
+                snakingTurnManager(ref framegoal_50x);
+                break;
+            case 100:
+                snakingTurnManager(ref framegoal_100x);
+                break;
+            default:
+                break;
+            }
+    }
+
+    void snakingTurnManager(ref int goal) {
+        
+        if (frameSnakingCounter == goal) {
+            transform.Rotate(0, 90, 0);
+            Debug.Log("turning back");
+            frameSnakingCounter = 0;
+        }
+        else {
+            frameSnakingCounter++;
+        }
+    }
+
+    /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
+
+    void wallfollowAlgo()
+    {
+        rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
+    }
+
     /*------------------------------------------ Sprial Algo ------------------------------------------*/
 
-    // manages the speed and intervals of the spirals
+    // Manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
-        // Debug.Log($"Counter: {frameSpiralCounter} || Goal: {goal}");
+        
         if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;
@@ -261,10 +342,7 @@ public class RovacManager : MonoBehaviour {
     void timeManager() {
         timeFrameCounter = timeFrameCounter + frameInterval;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
-        timeFrameCounter++;
         if (timeFrameCounter >= timeGoal) {
-            recordData();
-            Debug.Log("Time Stopped");
             panel.GetComponent<UIManager>().stopAction();
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -296,14 +374,18 @@ public class RovacManager : MonoBehaviour {
         framegoal_100x = framegoal_100xStartingPoint;
     }
 
+    void resetSnakingTimers() {
+        framegoal_1x = framegoal_1xStartingPoint;
+        framegoal_50x = framegoal_50xStartingPoint;
+        framegoal_100x = framegoal_100xStartingPoint;
+    }
+
     /*----------------------------------------- Data Recording -----------------------------------------*/
 
     void recordData() {
 
         createFile();
         appendToFile();
-
-        Debug.Log("Recorded");
     }
 
     void createFile() {
@@ -347,7 +429,6 @@ public class RovacManager : MonoBehaviour {
     void inputAction(string value) {
         // To get the text
         IDName = value;
-        Debug.Log(IDName);
 
     }
 
