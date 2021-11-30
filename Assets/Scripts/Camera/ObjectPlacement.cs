@@ -9,8 +9,8 @@ using TMPro;
 public class ObjectPlacement : MonoBehaviour {
 
     // creates mouse and actual objects
-    public GameObject Chest, Wall, Floor, Rovac, Table2x2, Table2x4, Table2x6;
-    public GameObject ChestMouse, WallMouse, FloorMouse, RovacMouse, Table2x2Mouse, Table2x4Mouse, Table2x6Mouse;
+    public GameObject Chest, Wall, Floor, Rovac, Table2x2, Table2x4, Table2x6, Chair2x2, Chair2x4;
+    public GameObject ChestMouse, WallMouse, FloorMouse, RovacMouse, Table2x2Mouse, Table2x4Mouse, Table2x6Mouse, Chair2x2Mouse, Chair2x4Mouse;
     // material used for the line in bulk mode
     // valid is green
     // invalid is red
@@ -20,7 +20,7 @@ public class ObjectPlacement : MonoBehaviour {
     float wallYOffset = 1.5f;
     float tablesYOffset = 1.45f;
     float floorYOffset = 0.5f;
-    float chairYOffset = 0;
+    float chairYOffset = 2.25f;
     float chestYOffset = 1.5f;
 
     // bools to see which object is active to be placed
@@ -29,11 +29,14 @@ public class ObjectPlacement : MonoBehaviour {
     bool wallActive = false;
     bool floorActive = false;
     bool tablesActive = false;
+    bool chairsActive = false;
     bool deleteActive = false;
     bool bulkActive = false;
     bool table2x2Active = true;
     bool table2x4Active = false;
     bool table2x6Active = false;
+    bool chair2x2Active = true;
+    bool chair2x4Active = false;
 
     // counts how many bulk clicks have been made
     int bulkCicks = 0;
@@ -51,6 +54,8 @@ public class ObjectPlacement : MonoBehaviour {
     List<GameObject> table2x2Collection = new List<GameObject>();
     List<GameObject> table2x4Collection = new List<GameObject>();
     List<GameObject> table2x6Collection = new List<GameObject>();
+    List<GameObject> chair2x2Collection = new List<GameObject>();
+    List<GameObject> chair2x4Collection = new List<GameObject>();
 
     // create line for bulk mode
     LineRenderer line;
@@ -63,8 +68,8 @@ public class ObjectPlacement : MonoBehaviour {
 
 
     // objexcts for the UI elements
-    public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton;
-    public TMP_Dropdown floorDropdown, tableDropdown;
+    public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton, chairButton;
+    public TMP_Dropdown floorDropdown, tableDropdown, chairDropdown;
     public TMP_Text floorCountText;
     string path;
 
@@ -91,6 +96,7 @@ public class ObjectPlacement : MonoBehaviour {
         saveButton.GetComponent<Button>().onClick.AddListener(saveAction);
         loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
         tableButton.GetComponent<Button>().onClick.AddListener(tableAction);
+        chairButton.GetComponent<Button>().onClick.AddListener(chairAction);
         rovacButton.GetComponent<Button>().onClick.AddListener(rovacAction);
         bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
         floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
@@ -98,6 +104,9 @@ public class ObjectPlacement : MonoBehaviour {
         });
         tableDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             TableValueChanged(tableDropdown);
+        });
+        chairDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+            ChairValueChanged(chairDropdown);
         });
 
         // init line renderer for bulk mode
@@ -248,6 +257,21 @@ public class ObjectPlacement : MonoBehaviour {
                 }
             }
         }
+
+        // if chairs is selected
+        if (chairsActive) {
+            worldPoint = getWorldPoint();
+            if (worldPoint != Vector3.zero) {
+                if (chair2x2Active) {
+                    placeObjectVariant(Chair2x2Mouse, Chair2x2, chairYOffset, chair2x2Collection);
+                }
+                if (chair2x4Active) {
+                    placeObjectVariant(Chair2x4Mouse, Chair2x4, chairYOffset, chair2x4Collection);
+                }
+            }
+        }
+
+
         // if delete mode is active
         if (deleteActive) {
             getWorldPointDelete();
@@ -437,7 +461,6 @@ public class ObjectPlacement : MonoBehaviour {
                             deleteObjectFromList(wallCollection, delObject);
                             break;
                         case "Table2x2":
-
                             deleteObjectFromList(table2x2Collection, delObject);
                             break;
                         case "Table2x4":
@@ -495,6 +518,7 @@ public class ObjectPlacement : MonoBehaviour {
         tablesActive = false;
         rovacActive = false;
         deleteActive = false;
+        chairsActive = false;
     }
 
     // resets the mouse objext so they do not stay on the mouse after another has been activated
@@ -506,6 +530,8 @@ public class ObjectPlacement : MonoBehaviour {
         Table2x2Mouse.transform.position = new Vector3(10, -10, 10);
         Table2x4Mouse.transform.position = new Vector3(10, -10, 10);
         Table2x6Mouse.transform.position = new Vector3(10, -10, 10);
+        Chair2x2Mouse.transform.position = new Vector3(10, -10, 10);
+        Chair2x4Mouse.transform.position = new Vector3(10, -10, 10);
     }
 
     // deletes object from list and destory it from the simulation and memory
@@ -629,6 +655,28 @@ public class ObjectPlacement : MonoBehaviour {
         switchTableSettings(change.value);
     }
 
+    void ChairValueChanged(TMP_Dropdown change) {
+        switchChairSettings(change.value);
+    }
+
+    void switchChairSettings(int choice) {
+        switch (choice) {
+            case 0:
+                resetObjectPositions();
+                resetChairActive();
+                chair2x2Active = true;
+                break;
+            case 1:
+                resetObjectPositions();
+                resetChairActive();
+                chair2x4Active = true;
+                break;
+            default:
+                break;
+        }
+
+    }
+
     void switchFloorSettings(int choice) {
         switch (choice) {
             case 0:
@@ -657,6 +705,11 @@ public class ObjectPlacement : MonoBehaviour {
         table2x2Active = false;
         table2x4Active = false;
         table2x6Active = false;
+    }
+
+    void resetChairActive() {
+        chair2x2Active = false;
+        chair2x4Active = false;
     }
 
     void switchTableSettings(int choice) {
@@ -701,6 +754,12 @@ public class ObjectPlacement : MonoBehaviour {
         resetObjectPositions();
         disableAll();
         tablesActive = true;
+    }
+
+    void chairAction() {
+        resetObjectPositions();
+        disableAll();
+        chairsActive = true;
     }
 
     void rovacAction() {
