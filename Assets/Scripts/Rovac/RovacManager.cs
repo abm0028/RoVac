@@ -154,10 +154,9 @@ public class RovacManager : MonoBehaviour {
                 RaycastHit hitInfo;
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
-                    Debug.Log("i hit a wall");
-                    transform.Rotate(0, 90, 0);
-                    frameSnakingCounter = 0;
-                    resetSnakingTimers();
+                    
+                    float currentFacing = transform.rotation.y;
+                    transform.Rotate(0, snakingTurn(currentFacing), 0);
                 }
             }
         
@@ -168,7 +167,6 @@ public class RovacManager : MonoBehaviour {
                 float angle = UnityEngine.Random.Range(-1, 1)*45;
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
-                    float randRotation = transform.rotation.y;
                     transform.Rotate(0, angle, 0);
                 }
             }
@@ -227,10 +225,12 @@ public class RovacManager : MonoBehaviour {
 
     // Random Algorithm and instructions for object collision
     void randomAlgo() {
+
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
+
     }
 
-    // Will handle the turning of the roVac when the random algoritm is active
+    // Will handle the turning of the roVac when the random algorithm is active
     float randomTurn(float currentRotation) {
 
         float start = currentRotation + 180;
@@ -259,38 +259,18 @@ public class RovacManager : MonoBehaviour {
     void snakingAlgo() {
 
         rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
-                    
-        switch (simulationSpeed) {
-            case 1:
-                snakingTurnManager(ref framegoal_1x);
-                break;
-            case 50:
-                snakingTurnManager(ref framegoal_50x);
-                break;
-            case 100:
-                snakingTurnManager(ref framegoal_100x);
-                break;
-            default:
-                break;
-            }
     }
 
-    void snakingTurnManager(ref int goal) {
-        
-        if (frameSnakingCounter == goal) {
-            transform.Rotate(0, 90, 0);
-            Debug.Log("turning back");
-            frameSnakingCounter = 0;
-        }
-        else {
-            frameSnakingCounter++;
-        }
+    float snakingTurn(float currentRotation) {
+
+        return currentRotation + 190;
+ 
     }
 
     /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
 
-    void wallfollowAlgo()
-    {
+    void wallfollowAlgo() {
+
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
     }
 
