@@ -406,11 +406,11 @@ public class RovacManager : MonoBehaviour {
     void inputAction(string value) {
         // To get the text
         IDName = value;
-
     }
 
     /*---------------------------------------------- Buttons ----------------------------------------------*/
     void startAction() {
+
         int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
         if (floorcount >= 200 && floorcount <= 8000) {
             hasStarted = true;

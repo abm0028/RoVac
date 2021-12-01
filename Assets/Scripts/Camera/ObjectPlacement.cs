@@ -68,7 +68,7 @@ public class ObjectPlacement : MonoBehaviour {
 
 
     // objexcts for the UI elements
-    public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton, chairButton;
+    public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton, chairButton, startButton;
     public TMP_Dropdown floorDropdown, tableDropdown, chairDropdown;
     public TMP_Text floorCountText;
     string path;
@@ -99,6 +99,7 @@ public class ObjectPlacement : MonoBehaviour {
         chairButton.GetComponent<Button>().onClick.AddListener(chairAction);
         rovacButton.GetComponent<Button>().onClick.AddListener(rovacAction);
         bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
+        startButton.GetComponent<Button>().onClick.AddListener(startAction);
         floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             FloorValueChanged(floorDropdown);
         });
@@ -469,6 +470,12 @@ public class ObjectPlacement : MonoBehaviour {
                         case "Table2x6":
                             deleteObjectFromList(table2x6Collection, delObject);
                             break;
+                        case "Chair2x2":
+                            deleteObjectFromList(chair2x2Collection, delObject);
+                            break;
+                        case "Chair2x4":
+                            deleteObjectFromList(chair2x4Collection, delObject);
+                            break;
                         default:
                             break;
                     }
@@ -561,8 +568,11 @@ public class ObjectPlacement : MonoBehaviour {
         eraseObjects(floorCollection);
         eraseObjects(wallCollection);
         eraseObjects(chestCollection);
-
-
+        eraseObjects(table2x2Collection);
+        eraseObjects(table2x2Collection);
+        eraseObjects(table2x6Collection);
+        eraseObjects(chair2x2Collection);
+        eraseObjects(chair2x4Collection);
 
         using (StreamReader sr = File.OpenText(path)) {
             while (!sr.EndOfStream) {
@@ -580,6 +590,21 @@ public class ObjectPlacement : MonoBehaviour {
                         break;
                     case "Chest":
                         chestCollection.Add(Instantiate(Chest, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Table2x2":
+                        table2x2Collection.Add(Instantiate(Table2x2, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Table2x4":
+                        table2x4Collection.Add(Instantiate(Table2x4, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Table2x6":
+                        table2x6Collection.Add(Instantiate(Table2x6, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Chair2x2":
+                        chair2x2Collection.Add(Instantiate(Chair2x2, position, Quaternion.Euler(rotation)));
+                        break;
+                    case "Chair2x4":
+                        chair2x4Collection.Add(Instantiate(Chair2x4, position, Quaternion.Euler(rotation)));
                         break;
                     default:
                         Debug.Log("Tried to load " + name + "and was not found!");
@@ -636,6 +661,11 @@ public class ObjectPlacement : MonoBehaviour {
         appendObjectToFile(floorCollection, "Floor");
         appendObjectToFile(wallCollection, "Wall");
         appendObjectToFile(chestCollection, "Chest");
+        appendObjectToFile(table2x2Collection, "Table2x2");
+        appendObjectToFile(table2x4Collection, "Table2x4");
+        appendObjectToFile(table2x6Collection, "Table2x6");
+        appendObjectToFile(chair2x2Collection, "Chair2x2");
+        appendObjectToFile(chair2x4Collection, "Chair2x4");
     }
 
     void updateFloorCountText() {
@@ -772,6 +802,11 @@ public class ObjectPlacement : MonoBehaviour {
         resetObjectPositions();
         disableAll();
         deleteActive = true;
+    }
+
+    void startAction() {
+        resetObjectPositions();
+        disableAll();
     }
 
     void bulkAction() {

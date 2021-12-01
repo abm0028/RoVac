@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour {
     bool hasStarted = false;
     ObjectPlacement objectscript;
     public Camera cameraobj;
+    int simSpeed = 1;
 
     // Start is called before the first frame update
     void Start() {
@@ -31,6 +32,10 @@ public class UIManager : MonoBehaviour {
         menuButton.GetComponent<Button>().onClick.AddListener(menuAction);
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
+
+        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+            SpeedValueChanged(speedDropdown);
+        });
 
         stopButton.gameObject.SetActive(false);
 
@@ -179,5 +184,33 @@ public class UIManager : MonoBehaviour {
         rovacButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.white;
     }
+
+    // handles the change in floor dropdown 
+    void SpeedValueChanged(TMP_Dropdown change) {
+        int speedChoice = change.value;
+        switchSimulationSpeed(speedChoice);
+    }
+
+    // Will change the speed of the simulation when selected by the user
+    void switchSimulationSpeed(int choice) {
+        switch (choice) {
+            case 0:
+                simSpeed = 1;
+                break;
+            case 1:
+                simSpeed = 50;
+                break;
+            case 2:
+                simSpeed = 100;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public int getSimSpeed() {
+        return simSpeed;
+    }
+
 }
 
