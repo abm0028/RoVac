@@ -497,7 +497,7 @@ public class ObjectPlacement : MonoBehaviour {
         deleteActive = false;
     }
 
-    // resets the mouse objext so they do not stay on the mouse after another has been activated
+    // resets the mouse objects so they do not stay on the mouse after another has been activated
     void resetObjectPositions() {
         WallMouse.transform.position = new Vector3(10, -10, 10);
         ChestMouse.transform.position = new Vector3(10, -10, 10);

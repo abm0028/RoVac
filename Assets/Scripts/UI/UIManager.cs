@@ -158,13 +158,19 @@ public class UIManager : MonoBehaviour {
         bulkButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, 0.5f);
     }
+
     void bulkAction() {
         if (bulkActive) {
             bulkActive = false;
             bulkButton.GetComponent<Image>().color = Color.white;
-        } else {
+        }
+        else {
             bulkActive = true;
-            bulkButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.yellow, 0.5f);
+            bulkButton.GetComponent<Image>().color = Color.yellow;
+            chairButton.GetComponent<Image>().color = Color.gray;
+            tableButton.GetComponent<Image>().color = Color.gray;
+            rovacButton.GetComponent<Image>().color = Color.gray;
+            deleteButton.GetComponent<Image>().color = Color.gray;
         }
 
         deleteButton.GetComponent<Image>().color = Color.white;

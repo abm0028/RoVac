@@ -27,6 +27,7 @@ public class Cleaning : MonoBehaviour {
     int simulationSpeed = 1;
 
     public TMP_Dropdown speedDropdown, floorDropdown;
+    public TMP_Text percentText;
     public Button startButton, stopButton;
 
     // cleaining reduction is the value that is subtracted from the floor tile's dirtiness
@@ -61,6 +62,21 @@ public class Cleaning : MonoBehaviour {
         });
     }
 
+<<<<<<< Updated upstream
+=======
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.P)) {
+            Debug.Log($"CleaningPoints: {cleaningPoints}");
+            Debug.Log($"CleaningReduction: {cleaningReductionInner}");
+            Debug.Log($"Sim Speed: {simulationSpeed}");
+        }
+    }
+
+    void FixedUpdate() {
+        updatePercentText();
+    }
+
+>>>>>>> Stashed changes
     // Will handle the changing of the floor color according to collision with the roVac
     void OnTriggerStay(Collider collision) {
 
@@ -98,6 +114,10 @@ public class Cleaning : MonoBehaviour {
     // called from other classes for data retreival
     public float getPercentage() {
         return Mathf.Abs((float)cleaningPoints / (float)startingPoints);
+    }
+
+    void updatePercentText() {
+        percentText.text = $"Percent Cleaned: {getPercentage()-1} %";
     }
 
     // takes the color between two colors depending on the percentage of the floor that was cleaned

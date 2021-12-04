@@ -27,7 +27,7 @@ public class RovacManager : MonoBehaviour {
     ObjectPlacement objectscript;
     GUIContent content;
 
-    public TMP_Text batteryText;
+    public TMP_Text batteryText, percentText;
     Rigidbody rb;
     bool allActive = true;
     bool snakingActive, wallfollowActive, spiralActive, randomActive = false;
@@ -151,17 +151,17 @@ public class RovacManager : MonoBehaviour {
                 RaycastHit hitInfo;
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
-
+                    
                     float currentFacing = transform.rotation.y;
                     transform.Rotate(0, snakingTurn(currentFacing), 0);
                 }
             }
-
+        
             if (wallfollowActive) {
-
+                
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
-                float angle = UnityEngine.Random.Range(-1, 1) * 45;
+                float angle = UnityEngine.Random.Range(-1, 1)*45;
 
                 if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
                     transform.Rotate(0, angle, 0);
@@ -197,15 +197,16 @@ public class RovacManager : MonoBehaviour {
                 randomAlgo();
             }
 
-            if (snakingActive) {
+            if(snakingActive){
                 snakingAlgo();
             }
 
-            if (wallfollowActive) {
+            if(wallfollowActive){
                 wallfollowAlgo();
             }
 
             timeManager();
+            updatePercentText();
         }
     }
 
@@ -261,7 +262,7 @@ public class RovacManager : MonoBehaviour {
     float snakingTurn(float currentRotation) {
 
         return currentRotation + 190;
-
+ 
     }
 
     /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
@@ -275,7 +276,7 @@ public class RovacManager : MonoBehaviour {
 
     // Manages the speed and intervals of the spirals
     void spiralSpeedManager(ref int goal, ref int incrementStep) {
-
+        
         if (frameSpiralCounter == goal) {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;
@@ -409,6 +410,11 @@ public class RovacManager : MonoBehaviour {
 
     }
 
+    Cleaning percentClean = gameObject.GetComponent<Cleaning>();
+    void updatePercentText() {
+        percentText.text = $"Percent Cleaned: {getPercentage()} %";
+    }
+
     /*---------------------------------------------- Buttons ----------------------------------------------*/
     void startAction() {
         int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
@@ -428,8 +434,6 @@ public class RovacManager : MonoBehaviour {
         rb.angularVelocity = Vector3.zero;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
     }
-
-
 
     // Will read the integer value denoting the seleted algorithm and changed it base on that
     void switchAlgorithims(int choice) {
