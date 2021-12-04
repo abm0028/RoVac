@@ -222,9 +222,7 @@ public class RovacManager : MonoBehaviour {
 
     // Random Algorithm and instructions for object collision
     void randomAlgo() {
-
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
-
     }
 
     // Will handle the turning of the roVac when the random algorithm is active
@@ -360,7 +358,6 @@ public class RovacManager : MonoBehaviour {
     /*----------------------------------------- Data Recording -----------------------------------------*/
 
     void recordData() {
-
         createFile();
         appendToFile();
     }

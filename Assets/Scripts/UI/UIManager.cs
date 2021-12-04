@@ -7,13 +7,40 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
     public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton, exitButton, stopButton, startButton, menuButton;
-    public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown;
+    public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown, loadDropdown;
     public TMP_InputField IDField;
     bool bulkActive = false;
     bool hasStarted = false;
     ObjectPlacement objectscript;
     public Camera cameraobj;
     int simSpeed = 1;
+
+    private Rect windowRect = new Rect((Screen.width - 200) / 2, (Screen.height - 300) / 2, 200, 75);
+
+    // Only show it if needed.
+    private bool show = false;
+
+    public GUIStyle primaryButtonSkin;
+    public GUIStyle secondaryButtonSkin;
+
+    void DialogWindow(int windowID) {
+        float y = 20;
+
+        if (GUI.Button(new Rect(5, y, windowRect.width - 10, 20), "No", secondaryButtonSkin)) {
+            show = false;
+        }
+
+        if (GUI.Button(new Rect(5, y + 30, windowRect.width - 10, 20), "Yes", primaryButtonSkin)) {
+            Application.Quit();
+            show = false;
+        }
+    }
+
+    void OnGUI() {
+        if (show)
+            windowRect = GUI.Window(0, windowRect, DialogWindow, "You sure you want to exit?");
+    }
+
 
     // Start is called before the first frame update
     void Start() {
@@ -57,6 +84,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(false);
         speedDropdown.gameObject.SetActive(false);
         floorDropdown.gameObject.SetActive(false);
+        loadDropdown.gameObject.SetActive(false);
         algorithmDropdown.gameObject.SetActive(false);
         tableDropdown.gameObject.SetActive(false);
         chairDropdown.gameObject.SetActive(false);
@@ -83,6 +111,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(true);
         speedDropdown.gameObject.SetActive(true);
         floorDropdown.gameObject.SetActive(true);
+        loadDropdown.gameObject.SetActive(true);
         algorithmDropdown.gameObject.SetActive(true);
         tableDropdown.gameObject.SetActive(true);
         chairDropdown.gameObject.SetActive(true);
@@ -110,7 +139,7 @@ public class UIManager : MonoBehaviour {
     }
 
     void exitAction() {
-        Application.Quit();
+        show = true;
     }
 
     void menuAction() {

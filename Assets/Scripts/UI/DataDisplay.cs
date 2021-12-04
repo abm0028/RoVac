@@ -10,8 +10,7 @@ public class DataDisplay : MonoBehaviour {
     string path;
     public TMP_Text template;
     public GameObject parentUI;
-    int startingY = 65;
-    int xPosition = 20;
+    int startingY = 115;
     int counter = 0;
     public Button refreshButton;
     List<GameObject> textRecords = new List<GameObject>();
@@ -41,7 +40,6 @@ public class DataDisplay : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.C)) {
             readFile();
         }
-
     }
 
     void readFile() {
@@ -51,17 +49,14 @@ public class DataDisplay : MonoBehaviour {
                 if (!line.Contains("Date")) {
                     records.Push(line);
                 }
-
             }
             sr.Close();
         }
     }
 
     void displayRecords() {
-
         foreach (string record in records) {
-            if (counter < 6) {
-
+            if (counter < 12) {
                 string[] datapoints = record.Split(',');
                 displayTextValue(20, datapoints[0]);
                 displayTextValue(190, datapoints[1]);
@@ -69,14 +64,12 @@ public class DataDisplay : MonoBehaviour {
                 displayTextValue(420, datapoints[3]);
                 displayTextValue(580, datapoints[4]);
                 displayTextValue(685, datapoints[5]);
-                startingY -= 30;
+                startingY -= 24;
             }
             counter++;
         }
-
         counter = 0;
-        startingY = 65;
-
+        startingY = 115;
     }
 
     void displayTextValue(float xPos, string text) {
@@ -84,6 +77,18 @@ public class DataDisplay : MonoBehaviour {
         TMP_Text newTextBox = Instantiate(template, positon, Quaternion.identity, parentUI.transform);
         newTextBox.GetComponent<RectTransform>().localPosition = positon;
         newTextBox.text = text;
+        string percentageText;
+        if (newTextBox.text.Contains("%")) {
+            percentageText = newTextBox.text.Replace("%", "");
+            float value = float.Parse(percentageText);
+            if (value < 50) {
+                newTextBox.color = Color.red;
+            } else if (value >= 51 && value <= 75) {
+                newTextBox.color = Color.yellow;
+            } else {
+                newTextBox.color = Color.green;
+            }
+        }
         textRecords.Add(newTextBox.gameObject);
     }
 
@@ -92,8 +97,6 @@ public class DataDisplay : MonoBehaviour {
         readFile();
         displayRecords();
     }
-
-
 
     void deleteRecordsFromScreen() {
         foreach (GameObject text in textRecords) {
