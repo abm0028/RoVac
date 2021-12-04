@@ -8,6 +8,7 @@ using TMPro;
 
 public class ObjectPlacement : MonoBehaviour {
 
+    private Rect windowRect = new Rect((Screen.width - 200) / 2, (Screen.height - 300) / 2, 200, 75);
     // creates mouse and actual objects
     public GameObject Chest, Wall, Floor, Rovac, Table2x2, Table2x4, Table2x6, Chair2x2, Chair2x4;
     public GameObject ChestMouse, WallMouse, FloorMouse, RovacMouse, Table2x2Mouse, Table2x4Mouse, Table2x6Mouse, Chair2x2Mouse, Chair2x4Mouse;
@@ -65,6 +66,10 @@ public class ObjectPlacement : MonoBehaviour {
     // defaults worldpoint to zero
     Vector3 worldPoint = Vector3.zero;
     Color floorCurrentColor;
+
+    private bool show = false;
+    public GUIStyle primaryButtonSkin;
+    public GUIStyle secondaryButtonSkin;
 
 
     // objexcts for the UI elements
@@ -660,16 +665,34 @@ public class ObjectPlacement : MonoBehaviour {
 
     void saveAction() {
         //creates blank file
-        createFile();
+        show = true;
+    }
 
-        appendObjectToFile(floorCollection, "Floor");
-        appendObjectToFile(wallCollection, "Wall");
-        appendObjectToFile(chestCollection, "Chest");
-        appendObjectToFile(table2x2Collection, "Table2x2");
-        appendObjectToFile(table2x4Collection, "Table2x4");
-        appendObjectToFile(table2x6Collection, "Table2x6");
-        appendObjectToFile(chair2x2Collection, "Chair2x2");
-        appendObjectToFile(chair2x4Collection, "Chair2x4");
+
+    void DialogWindow(int windowID) {
+        float y = 20;
+
+        if (GUI.Button(new Rect(5, y, windowRect.width - 10, 20), "No", secondaryButtonSkin)) {
+            show = false;
+        }
+
+        if (GUI.Button(new Rect(5, y + 30, windowRect.width - 10, 20), "Yes", primaryButtonSkin)) {
+            createFile();
+            appendObjectToFile(floorCollection, "Floor");
+            appendObjectToFile(wallCollection, "Wall");
+            appendObjectToFile(chestCollection, "Chest");
+            appendObjectToFile(table2x2Collection, "Table2x2");
+            appendObjectToFile(table2x4Collection, "Table2x4");
+            appendObjectToFile(table2x6Collection, "Table2x6");
+            appendObjectToFile(chair2x2Collection, "Chair2x2");
+            appendObjectToFile(chair2x4Collection, "Chair2x4");
+            show = false;
+        }
+    }
+
+    void OnGUI() {
+        if (show)
+            windowRect = GUI.Window(0, windowRect, DialogWindow, "You sure you want to save?");
     }
 
     void updateFloorCountText() {

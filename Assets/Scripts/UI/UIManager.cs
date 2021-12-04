@@ -15,6 +15,33 @@ public class UIManager : MonoBehaviour {
     public Camera cameraobj;
     int simSpeed = 1;
 
+    private Rect windowRect = new Rect((Screen.width - 200) / 2, (Screen.height - 300) / 2, 200, 75);
+
+    // Only show it if needed.
+    private bool show = false;
+
+    public GUIStyle primaryButtonSkin;
+    public GUIStyle secondaryButtonSkin;
+
+    void DialogWindow(int windowID) {
+        float y = 20;
+
+        if (GUI.Button(new Rect(5, y, windowRect.width - 10, 20), "No", secondaryButtonSkin)) {
+            show = false;
+        }
+
+        if (GUI.Button(new Rect(5, y + 30, windowRect.width - 10, 20), "Yes", primaryButtonSkin)) {
+            Application.Quit();
+            show = false;
+        }
+    }
+
+    void OnGUI() {
+        if (show)
+            windowRect = GUI.Window(0, windowRect, DialogWindow, "You sure you want to exit?");
+    }
+
+
     // Start is called before the first frame update
     void Start() {
 
@@ -112,7 +139,7 @@ public class UIManager : MonoBehaviour {
     }
 
     void exitAction() {
-        Application.Quit();
+        show = true;
     }
 
     void menuAction() {
