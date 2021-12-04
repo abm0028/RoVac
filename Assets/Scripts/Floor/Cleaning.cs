@@ -28,6 +28,7 @@ public class Cleaning : MonoBehaviour {
 
     public TMP_Dropdown speedDropdown, floorDropdown;
     public Button startButton, stopButton;
+    public GameObject panel;
 
     // cleaining reduction is the value that is subtracted from the floor tile's dirtiness
     int cleaningReductionInner;
@@ -59,6 +60,14 @@ public class Cleaning : MonoBehaviour {
         floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             FloorValueChanged(floorDropdown);
         });
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.P)) {
+            Debug.Log($"CleaningPoints: {cleaningPoints}");
+            Debug.Log($"CleaningReduction: {cleaningReductionInner}");
+            Debug.Log($"Sim Speed: {simulationSpeed}");
+        }
     }
 
     // Will handle the changing of the floor color according to collision with the roVac
@@ -176,6 +185,14 @@ public class Cleaning : MonoBehaviour {
     }
 
     void startAction() {
+
+        int simSpeed = panel.GetComponent<UIManager>().getSimSpeed();
+
+        startingPoints = (int)(startingPointsBase * simSpeed);
+        // changes reduction rate from the similation speed to balance the extra speed
+        cleaningReductionInner = simSpeed * cleanBaseRateInner;
+        // changes reduction rate from the similation speed to balance the extra speed
+        cleaningReductionOuter = simSpeed * cleanBaseRateOuter;
         hasStarted = true;
     }
 

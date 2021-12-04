@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour {
     bool hasStarted = false;
     ObjectPlacement objectscript;
     public Camera cameraobj;
+    int simSpeed = 1;
 
     // Start is called before the first frame update
     void Start() {
@@ -31,6 +32,10 @@ public class UIManager : MonoBehaviour {
         menuButton.GetComponent<Button>().onClick.AddListener(menuAction);
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
+
+        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+            SpeedValueChanged(speedDropdown);
+        });
 
         stopButton.gameObject.SetActive(false);
 
@@ -56,6 +61,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(false);
         chairDropdown.gameObject.SetActive(false);
         IDField.gameObject.SetActive(false);
+        menuButton.gameObject.SetActive(false);
         stopButton.gameObject.SetActive(true);
 
         this.gameObject.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -81,6 +87,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(true);
         chairDropdown.gameObject.SetActive(true);
         IDField.gameObject.SetActive(true);
+        menuButton.gameObject.SetActive(true);
         stopButton.gameObject.SetActive(false);
         this.gameObject.GetComponent<Image>().color = new Color(0.247f, 0.247f, 0.247f, 1.0f);
     }
@@ -177,5 +184,33 @@ public class UIManager : MonoBehaviour {
         rovacButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.white;
     }
+
+    // handles the change in floor dropdown 
+    void SpeedValueChanged(TMP_Dropdown change) {
+        int speedChoice = change.value;
+        switchSimulationSpeed(speedChoice);
+    }
+
+    // Will change the speed of the simulation when selected by the user
+    void switchSimulationSpeed(int choice) {
+        switch (choice) {
+            case 0:
+                simSpeed = 1;
+                break;
+            case 1:
+                simSpeed = 50;
+                break;
+            case 2:
+                simSpeed = 100;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public int getSimSpeed() {
+        return simSpeed;
+    }
+
 }
 

@@ -1,14 +1,22 @@
 Date, Algorithm, Algorithm Version, ID, Cleaning Pct, Time remaining
-11-23-2021 20:19:27, Wall-follow, Wall-follow 1.0, ID, 10%, 145 minutes
-11-23-2021 20:19:35, Random, Random 1.0, ID, 29%, 131 minutes
-11-23-2021 20:19:53, Random, Random 1.0, ID, 52%, 102 minutes
-11-23-2021 20:19:59, Random, Random 1.0, ID, 57%, 91 minutes
-11-23-2021 20:20:05, Random, Random 1.0, ID, 57%, 80 minutes
-11-23-2021 20:20:08, Random, Random 1.0, ID, 57%, 75 minutes
-11-23-2021 20:20:11, Random, Random 1.0, ID, 57%, 70 minutes
-11-26-2021 13:51:07, Random, Random 1.0,ID, 81%, 0 minutes
-11-27-2021 21:29:49, Random, Random 1.0,ID, 2%, 149 minutes
-11-29-2021 21:04:50, Random, Random 1.0,ID, 23%, 140 minutes
-11-29-2021 21:12:02, Random, Random 1.0,ID, 70%, 78 minutes
-11-29-2021 22:24:30, Wall-follow, Wall-follow 1.0,ID, 0%, 150 minutes
-11-29-2021 22:24:47, Wall-follow, Wall-follow 1.0,ID, 19%, 139 minutes
+11-29-2021 23:11:01, Spiral, Spiral 1.0,ID, 91%, 0 minutes
+11-30-2021 22:41:24, Random, Random 1.0,ID, 0%, 150 minutes
+11-30-2021 22:46:02, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:05, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:10, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:10, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:12, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:12, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:12, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:12, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:12, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:13, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:13, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:13, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:28, All, All 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:46:47, Random, Random 1.0,ID, NaN%, 150 minutes
+11-30-2021 22:47:33, Random, Random 1.0,ID, 0%, 150 minutes
+11-30-2021 22:47:52, All, All 1.0,ID, 0%, 150 minutes
+11-30-2021 22:48:02, All, All 1.0,ID, 0%, 150 minutes
+11-30-2021 22:49:43, All, All 1.0,ID, 0%, 145 minutes
+11-30-2021 23:00:55, All, All 1.0,ID, 99%, 143 minutes
