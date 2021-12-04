@@ -64,9 +64,9 @@ public class Cleaning : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.P)) {
-            Debug.Log($"CleaningPoints: {cleaningPoints}");
-            Debug.Log($"CleaningReduction: {cleaningReductionInner}");
-            Debug.Log($"Sim Speed: {simulationSpeed}");
+            //Debug.Log($"CleaningPoints: {cleaningPoints}");
+            //Debug.Log($"CleaningReduction: {cleaningReductionInner}");
+            //Debug.Log($"Sim Speed: {simulationSpeed}");
         }
     }
 
@@ -186,9 +186,10 @@ public class Cleaning : MonoBehaviour {
 
     void startAction() {
 
+        //Debug.Log($"Pre StartingPoints: {startingPoints}");
         int simSpeed = panel.GetComponent<UIManager>().getSimSpeed();
 
-        startingPoints = (int)(startingPointsBase * simSpeed);
+        cleaningPoints = startingPoints;
         // changes reduction rate from the similation speed to balance the extra speed
         cleaningReductionInner = simSpeed * cleanBaseRateInner;
         // changes reduction rate from the similation speed to balance the extra speed

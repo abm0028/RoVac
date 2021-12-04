@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
     public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton, exitButton, stopButton, startButton, menuButton;
-    public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown;
+    public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown, loadDropdown;
     public TMP_InputField IDField;
     bool bulkActive = false;
     bool hasStarted = false;
@@ -57,6 +57,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(false);
         speedDropdown.gameObject.SetActive(false);
         floorDropdown.gameObject.SetActive(false);
+        loadDropdown.gameObject.SetActive(false);
         algorithmDropdown.gameObject.SetActive(false);
         tableDropdown.gameObject.SetActive(false);
         chairDropdown.gameObject.SetActive(false);
@@ -83,6 +84,7 @@ public class UIManager : MonoBehaviour {
         tableDropdown.gameObject.SetActive(true);
         speedDropdown.gameObject.SetActive(true);
         floorDropdown.gameObject.SetActive(true);
+        loadDropdown.gameObject.SetActive(true);
         algorithmDropdown.gameObject.SetActive(true);
         tableDropdown.gameObject.SetActive(true);
         chairDropdown.gameObject.SetActive(true);

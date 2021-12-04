@@ -69,12 +69,11 @@ public class ObjectPlacement : MonoBehaviour {
 
     // objexcts for the UI elements
     public Button wallButton, floorButton, chestButton, rovacButton, saveButton, loadButton, deleteButton, tableButton, bulkButton, chairButton, startButton;
-    public TMP_Dropdown floorDropdown, tableDropdown, chairDropdown;
+    public TMP_Dropdown floorDropdown, tableDropdown, chairDropdown, loadDropdown;
     public TMP_Text floorCountText;
-    string path;
+    string loadPath, savePath;
 
     string setPath(string path) {
-
         if (Application.isEditor) {
             return $@"Assets/Resources/{path}";
         } else {
@@ -85,7 +84,8 @@ public class ObjectPlacement : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        path = setPath("default.txt");
+        loadPath = setPath("userhouse.txt");
+        savePath = setPath("userhouse.txt");
         worldPoint = getWorldPoint();
 
         // adds the listeneres to the UI elements
@@ -108,6 +108,9 @@ public class ObjectPlacement : MonoBehaviour {
         });
         chairDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
             ChairValueChanged(chairDropdown);
+        });
+        loadDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+            LoadValueChanged(loadDropdown);
         });
 
         // init line renderer for bulk mode
@@ -554,8 +557,7 @@ public class ObjectPlacement : MonoBehaviour {
     void appendObjectToFile(List<GameObject> list, String name) {
 
         foreach (GameObject currentObjct in list) {
-            using (StreamWriter sw = File.AppendText(path)) {
-
+            using (StreamWriter sw = File.AppendText(savePath)) {
                 Vector3 pos = currentObjct.transform.position;
                 Vector3 rot = currentObjct.transform.rotation.eulerAngles;
                 sw.WriteLine(name + ", " + pos.x + ", " + pos.y + ", " + pos.z + ", " + rot.x + ", " + rot.y + ", " + rot.z);
@@ -574,7 +576,9 @@ public class ObjectPlacement : MonoBehaviour {
         eraseObjects(chair2x2Collection);
         eraseObjects(chair2x4Collection);
 
-        using (StreamReader sr = File.OpenText(path)) {
+        Debug.Log(loadPath);
+
+        using (StreamReader sr = File.OpenText(loadPath)) {
             while (!sr.EndOfStream) {
                 String line = sr.ReadLine();
                 String[] splitLine = line.Split(',');
@@ -625,7 +629,7 @@ public class ObjectPlacement : MonoBehaviour {
     }
 
     void createFile() {
-        using (StreamWriter sw = File.CreateText(path)) {
+        using (StreamWriter sw = File.CreateText(loadPath)) {
             sw.Close();
         }
     }
@@ -687,6 +691,29 @@ public class ObjectPlacement : MonoBehaviour {
 
     void ChairValueChanged(TMP_Dropdown change) {
         switchChairSettings(change.value);
+    }
+
+    void LoadValueChanged(TMP_Dropdown change) {
+        switchLoadSettings(change.value);
+    }
+
+    void switchLoadSettings(int choice) {
+        switch (choice) {
+            case 0:
+                loadPath = setPath("userhouse.txt");
+                break;
+            case 1:
+                loadPath = setPath("housepreset1.txt");
+                break;
+            case 2:
+                loadPath = setPath("housepreset2.txt");
+                break;
+            case 3:
+                loadPath = setPath("housepreset3.txt");
+                break;
+            default:
+                break;
+        }
     }
 
     void switchChairSettings(int choice) {
