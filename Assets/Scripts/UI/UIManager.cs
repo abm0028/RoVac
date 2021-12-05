@@ -95,7 +95,7 @@ public class UIManager : MonoBehaviour {
         this.gameObject.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    void showUI() {
+    public void showUI() {
         chairButton.gameObject.SetActive(true);
         tableButton.gameObject.SetActive(true);
         chestButton.gameObject.SetActive(true);

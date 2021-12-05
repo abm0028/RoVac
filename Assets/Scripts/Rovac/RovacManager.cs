@@ -27,17 +27,16 @@ public class RovacManager : MonoBehaviour {
     ObjectPlacement objectscript;
     GUIContent content;
 
-    public TMP_Text batteryText;
+    public TMP_Text batteryText, cleaningText;
     Rigidbody rb;
-    bool allActive = true;
-    bool snakingActive, wallfollowActive, spiralActive, randomActive = false;
+    bool allActive, snakingActive = true;
+    bool wallfollowActive, spiralActive, randomActive = false;
     int algorithmChoice = 0;
     String selectedAlgorithm = "All";
     bool hasStarted = false;
     int timeFrameCounter = 0;
     int timeGoalStartingPoint = 450000;
     int timeGoal = 450000;
-    // int timeGoal = 10000;
     int frameInterval;
     bool cooldown = false;
     int cooldownCounter = 0;
@@ -62,7 +61,6 @@ public class RovacManager : MonoBehaviour {
 
     float raycastLength = 1f;
 
-
     // Declaration and initialization of variables used in the roVac pathing algorithms
 
     // Variables used for snaking algorithm
@@ -80,9 +78,7 @@ public class RovacManager : MonoBehaviour {
     string IDName = "ID";
 
     string setPath(string path) {
-
         if (Application.isEditor) {
-
             return $@"Assets/Resources/{path}";
         } else {
 
@@ -115,6 +111,7 @@ public class RovacManager : MonoBehaviour {
 
         vaccumSpeed = baseSpeed * simulationSpeed;
         frameInterval = 1 * simulationSpeed;
+        allActive = true;
     }
 
     // Update is called once per frame
@@ -175,7 +172,7 @@ public class RovacManager : MonoBehaviour {
     }
 
     // FixedUpdate is called once per frame
-    // Will be used to change the pathing algorithm that will be run
+    // Will be used to change the algorithm that will be run
     void FixedUpdate() {
 
         if (hasStarted) {
@@ -206,12 +203,17 @@ public class RovacManager : MonoBehaviour {
             }
 
             timeManager();
+            updateCleanText();
         }
+    }
+
+    void updateCleanText() {
+        float cleanPct = cameraobj.GetComponent<ObjectPlacement>().getAverages();
+        cleaningText.text = $"Cleaning: {convertToPercentage(cleanPct)}";
     }
 
     // Will reset all algorithm bools to prepare for changing the algorithm
     void resetActive() {
-        allActive = false;
         snakingActive = false;
         wallfollowActive = false;
         spiralActive = false;
@@ -305,13 +307,6 @@ public class RovacManager : MonoBehaviour {
         }
     }
 
-    /*------------------------------------------ All algo ------------------------------------------*/
-
-    // Will run all algorithms if none are specified 
-    void allAlgo() {
-        Debug.Log("all");
-    }
-
     /*------------------------------------------ Time managment ------------------------------------------*/
 
     void timeManager() {
@@ -321,8 +316,12 @@ public class RovacManager : MonoBehaviour {
             panel.GetComponent<UIManager>().stopAction();
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-            stopAction();
-            resetFloors();
+            finishAction();
+            if (allActive) {
+                resetFloorsAllAlgo();
+            } else {
+                resetFloors();
+            }
         }
     }
 
@@ -334,13 +333,17 @@ public class RovacManager : MonoBehaviour {
     }
 
     void resetFloors() {
-
         List<GameObject> tempFloor = cameraobj.GetComponent<ObjectPlacement>().floorCollection;
-
         foreach (GameObject floor in tempFloor) {
             floor.GetComponent<Cleaning>().stopAction();
         }
+    }
 
+    void resetFloorsAllAlgo() {
+        List<GameObject> tempFloor = cameraobj.GetComponent<ObjectPlacement>().floorCollection;
+        foreach (GameObject floor in tempFloor) {
+            floor.GetComponent<Cleaning>().stopActionAllAlgo();
+        }
     }
 
     void resetSpiralTimers() {
@@ -407,54 +410,106 @@ public class RovacManager : MonoBehaviour {
 
     /*---------------------------------------------- Buttons ----------------------------------------------*/
     void startAction() {
-
         int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
         if (floorcount >= 200 && floorcount <= 8000) {
             hasStarted = true;
-        } else {
+        }
+    }
 
+    void finishAction() {
+        panel.GetComponent<UIManager>().showUI();
+        hasStarted = false;
+        transform.position = rovacPosition;
+        transform.rotation = Quaternion.identity;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
+        cleaningText.text = $"Cleaning: 0%";
+        if (allActive == false) {
+            timeFrameCounter = 0;
+            recordData();
+        }
+
+        if (allActive == true) {
+            if (snakingActive == true) {
+                selectedAlgorithm = "Snaking";
+                recordData();
+                timeFrameCounter = 0;
+                resetActive();
+                wallfollowActive = true;
+                startAction();
+                panel.GetComponent<UIManager>().hideUI();
+            } else if (wallfollowActive == true) {
+                selectedAlgorithm = "Wall-follow";
+                recordData();
+                timeFrameCounter = 0;
+                resetActive();
+                spiralActive = true;
+                startAction();
+                panel.GetComponent<UIManager>().hideUI();
+            } else if (spiralActive == true) {
+                selectedAlgorithm = "Spiral";
+                recordData();
+                timeFrameCounter = 0;
+                resetActive();
+                randomActive = true;
+                startAction();
+                panel.GetComponent<UIManager>().hideUI();
+            } else if (randomActive == true) {
+                selectedAlgorithm = "Random";
+                recordData();
+                timeFrameCounter = 0;
+                resetActive();
+                resetFloors();
+                panel.GetComponent<UIManager>().hideUI();
+            }
         }
     }
 
     void stopAction() {
+        panel.GetComponent<UIManager>().showUI();
         recordData();
         hasStarted = false;
         transform.position = rovacPosition;
+        transform.rotation = Quaternion.identity;
         timeFrameCounter = 0;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
+        cleaningText.text = $"Cleaning: 0%";
     }
-
-
 
     // Will read the integer value denoting the seleted algorithm and changed it base on that
     void switchAlgorithims(int choice) {
-
         switch (choice) {
             case 0:
                 resetActive();
                 selectedAlgorithm = "All";
                 allActive = true;
+                snakingActive = true;
                 break;
             case 1:
                 resetActive();
                 selectedAlgorithm = "Snaking";
+                allActive = false;
                 snakingActive = true;
                 break;
             case 2:
                 resetActive();
                 selectedAlgorithm = "Wall-follow";
+                allActive = false;
                 wallfollowActive = true;
                 break;
             case 3:
                 resetActive();
                 selectedAlgorithm = "Spiral";
+                allActive = false;
                 spiralActive = true;
                 break;
             case 4:
                 resetActive();
                 selectedAlgorithm = "Random";
+                allActive = false;
                 randomActive = true;
                 break;
             default:

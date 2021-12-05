@@ -205,4 +205,11 @@ public class Cleaning : MonoBehaviour {
         cleaningPoints = startingPoints;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
+
+    public void stopActionAllAlgo() {
+        hasStarted = false;
+        cleaningPoints = startingPoints;
+        gameObject.GetComponent<Renderer>().material.color = currentColor;
+        hasStarted = true;
+    }
 }

@@ -581,8 +581,6 @@ public class ObjectPlacement : MonoBehaviour {
         eraseObjects(chair2x2Collection);
         eraseObjects(chair2x4Collection);
 
-        Debug.Log(loadPath);
-
         using (StreamReader sr = File.OpenText(loadPath)) {
             while (!sr.EndOfStream) {
                 String line = sr.ReadLine();
