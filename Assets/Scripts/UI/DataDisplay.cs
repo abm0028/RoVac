@@ -81,8 +81,10 @@ public class DataDisplay : MonoBehaviour {
         if (newTextBox.text.Contains("%")) {
             percentageText = newTextBox.text.Replace("%", "");
             float value = float.Parse(percentageText);
-            if (value < 50) {
+            if (value < 25) {
                 newTextBox.color = Color.red;
+            } else if (value >= 25 && value <= 50) {
+                newTextBox.color = new Color32(252,68,1,255);
             } else if (value >= 51 && value <= 75) {
                 newTextBox.color = Color.yellow;
             } else {
