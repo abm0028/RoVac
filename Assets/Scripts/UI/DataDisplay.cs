@@ -18,9 +18,7 @@ public class DataDisplay : MonoBehaviour {
     Stack records = new Stack();
 
     string setPath(string path) {
-
         if (Application.isEditor) {
-
             return $@"Assets/Resources/{path}";
         } else {
             return $"{Application.dataPath}/StreamingAssets/{path}";
@@ -42,10 +40,12 @@ public class DataDisplay : MonoBehaviour {
         }
     }
 
+    // reads in the records.csv file and stores the data in a stack
     void readFile() {
         using (StreamReader sr = File.OpenText(path)) {
             while (!sr.EndOfStream) {
                 string line = sr.ReadLine();
+                // avoids the header of csv file
                 if (!line.Contains("Date")) {
                     records.Push(line);
                 }
@@ -54,8 +54,10 @@ public class DataDisplay : MonoBehaviour {
         }
     }
 
+    // displays the records
     void displayRecords() {
         foreach (string record in records) {
+            // allows 12 data points on screen
             if (counter < 12) {
                 string[] datapoints = record.Split(',');
                 displayTextValue(20, datapoints[0]);
@@ -72,6 +74,8 @@ public class DataDisplay : MonoBehaviour {
         startingY = 115;
     }
 
+    // displays the data value
+    // if its a percentage it will color code the text with green or red or yellow
     void displayTextValue(float xPos, string text) {
         Vector3 positon = new Vector3(xPos, startingY, 0);
         TMP_Text newTextBox = Instantiate(template, positon, Quaternion.identity, parentUI.transform);
@@ -84,7 +88,7 @@ public class DataDisplay : MonoBehaviour {
             if (value < 25) {
                 newTextBox.color = Color.red;
             } else if (value >= 25 && value <= 50) {
-                newTextBox.color = new Color32(252,68,1,255);
+                newTextBox.color = new Color32(252, 68, 1, 255);
             } else if (value >= 51 && value <= 75) {
                 newTextBox.color = Color.yellow;
             } else {
@@ -94,12 +98,14 @@ public class DataDisplay : MonoBehaviour {
         textRecords.Add(newTextBox.gameObject);
     }
 
+    // handles the refresh button listener
     void refreshAction() {
         deleteRecordsFromScreen();
         readFile();
         displayRecords();
     }
 
+    // deletes the records from the screen
     void deleteRecordsFromScreen() {
         foreach (GameObject text in textRecords) {
             Destroy(text);

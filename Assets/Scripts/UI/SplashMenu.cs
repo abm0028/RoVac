@@ -15,20 +15,15 @@ public class SplashMenu : MonoBehaviour {
     public GUIStyle primaryButtonSkin;
     public GUIStyle secondaryButtonSkin;
 
-    // fontSize = 20,
-    // alignment = TextAnchor.MiddleCenter,
-    // normal = { textColor = Color.white, background = Texture2D}
-
-
     void Start() {
         exitButton.onClick.AddListener(exitAction);
-        scoresButton.onClick.AddListener(scoresAction);
     }
 
     public void Play() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
+    // handles the exit button are you sure dialog box
     void DialogWindow(int windowID) {
         float y = 20;
 
@@ -49,13 +44,5 @@ public class SplashMenu : MonoBehaviour {
 
     void exitAction() {
         show = true;
-    }
-
-    void scoresAction() {
-
-    }
-
-    void deleteRecordsFromScreen() {
-        //
     }
 }

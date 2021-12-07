@@ -23,6 +23,7 @@ public class UIManager : MonoBehaviour {
     public GUIStyle primaryButtonSkin;
     public GUIStyle secondaryButtonSkin;
 
+    // handles are you sure you want to exit dialog box
     void DialogWindow(int windowID) {
         float y = 20;
 
@@ -51,8 +52,6 @@ public class UIManager : MonoBehaviour {
         floorButton.GetComponent<Button>().onClick.AddListener(floorAction);
         wallButton.GetComponent<Button>().onClick.AddListener(wallAction);
         rovacButton.GetComponent<Button>().onClick.AddListener(rovacAction);
-        saveButton.GetComponent<Button>().onClick.AddListener(saveAction);
-        loadButton.GetComponent<Button>().onClick.AddListener(loadAction);
         deleteButton.GetComponent<Button>().onClick.AddListener(deleteAction);
         bulkButton.GetComponent<Button>().onClick.AddListener(bulkAction);
         exitButton.GetComponent<Button>().onClick.AddListener(exitAction);
@@ -146,14 +145,6 @@ public class UIManager : MonoBehaviour {
         SceneManager.LoadScene(sceneName: "MenuScene");
     }
 
-    void saveAction() {
-
-    }
-
-    void loadAction() {
-
-    }
-
     void chairAction() {
         inactiveColor();
         chairButton.GetComponent<Image>().color = Color.green;
@@ -240,6 +231,4 @@ public class UIManager : MonoBehaviour {
     public int getSimSpeed() {
         return simSpeed;
     }
-
 }
-

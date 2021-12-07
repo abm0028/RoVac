@@ -184,6 +184,7 @@ public class Cleaning : MonoBehaviour {
         switchFloorSettings(change.value);
     }
 
+    // handles the start button press
     void startAction() {
 
         //Debug.Log($"Pre StartingPoints: {startingPoints}");
@@ -197,7 +198,7 @@ public class Cleaning : MonoBehaviour {
         hasStarted = true;
     }
 
-    // resets the floor tiles to the default color and original valie
+    // resets the floor tiles to the default color and original value
     // gets triggered when the stop button is pressed and/or when the similation is over
     // it is called from other classes so we made it public
     public void stopAction() {
@@ -206,6 +207,7 @@ public class Cleaning : MonoBehaviour {
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
 
+    // resets the floor tiles to the default color and original value and restarts the listening for rovac 
     public void stopActionAllAlgo() {
         hasStarted = false;
         cleaningPoints = startingPoints;

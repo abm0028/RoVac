@@ -570,6 +570,7 @@ public class ObjectPlacement : MonoBehaviour {
         }
     }
 
+    // reads file from the laod path
     void readFile() {
 
         eraseObjects(floorCollection);
@@ -616,7 +617,6 @@ public class ObjectPlacement : MonoBehaviour {
                     default:
                         Debug.Log("Tried to load " + name + "and was not found!");
                         break;
-
                 }
             }
             sr.Close();
@@ -624,6 +624,7 @@ public class ObjectPlacement : MonoBehaviour {
         updateFloorCountText();
     }
 
+    // general function that erases all objects in a list
     void eraseObjects(List<GameObject> list) {
         foreach (GameObject currentObject in list) {
             Destroy(currentObject);
@@ -631,16 +632,19 @@ public class ObjectPlacement : MonoBehaviour {
         list.Clear();
     }
 
+    // creates file if needed
     void createFile() {
         using (StreamWriter sw = File.CreateText(loadPath)) {
             sw.Close();
         }
     }
 
+    // load button listener
     void loadAction() {
         readFile();
     }
 
+    // handles wall button listener
     void wallAction() {
         resetObjectPositions();
         disableAll();
@@ -648,6 +652,7 @@ public class ObjectPlacement : MonoBehaviour {
         wallActive = true;
     }
 
+    // handles floor button listener
     void floorAction() {
         resetObjectPositions();
         disableAll();
@@ -655,18 +660,21 @@ public class ObjectPlacement : MonoBehaviour {
         floorActive = true;
     }
 
+    // handles chest button listener
     void chestAction() {
         resetObjectPositions();
         disableAll();
         chestActive = true;
     }
 
+    // handles save button listener
     void saveAction() {
         //creates blank file
         show = true;
     }
 
 
+    // handles save "are you sure gui window"
     void DialogWindow(int windowID) {
         float y = 20;
 
@@ -693,6 +701,7 @@ public class ObjectPlacement : MonoBehaviour {
             windowRect = GUI.Window(0, windowRect, DialogWindow, "You sure you want to save?");
     }
 
+    // updates floor count text to reflect amount of floors in world
     void updateFloorCountText() {
         if (floorCollection.Count >= 200 && floorCollection.Count <= 8000) {
             floorCountText.color = Color.green;
@@ -702,22 +711,27 @@ public class ObjectPlacement : MonoBehaviour {
         floorCountText.text = $"Square Feet: {floorCollection.Count}";
     }
 
+    // handles floor dropdown change
     void FloorValueChanged(TMP_Dropdown change) {
         switchFloorSettings(change.value);
     }
 
+    // handles table dropdown change
     void TableValueChanged(TMP_Dropdown change) {
         switchTableSettings(change.value);
     }
 
+    // handles chair dropdown change
     void ChairValueChanged(TMP_Dropdown change) {
         switchChairSettings(change.value);
     }
 
+    // handles load path of preset dropdown change
     void LoadValueChanged(TMP_Dropdown change) {
         switchLoadSettings(change.value);
     }
 
+    // handles load path of preset dropdown change
     void switchLoadSettings(int choice) {
         switch (choice) {
             case 0:
@@ -737,6 +751,7 @@ public class ObjectPlacement : MonoBehaviour {
         }
     }
 
+    // handles chair dropdown change
     void switchChairSettings(int choice) {
         switch (choice) {
             case 0:
@@ -752,9 +767,9 @@ public class ObjectPlacement : MonoBehaviour {
             default:
                 break;
         }
-
     }
 
+    // switches floor colors
     void switchFloorSettings(int choice) {
         switch (choice) {
             case 0:
@@ -779,12 +794,14 @@ public class ObjectPlacement : MonoBehaviour {
 
     }
 
+    // resets which table is active
     void resetTableActive() {
         table2x2Active = false;
         table2x4Active = false;
         table2x6Active = false;
     }
 
+    // resets which chair is active
     void resetChairActive() {
         chair2x2Active = false;
         chair2x4Active = false;
@@ -817,6 +834,7 @@ public class ObjectPlacement : MonoBehaviour {
         g.GetComponent<Renderer>().material.color = c;
     }
 
+    // chnages colors of the floors
     void changeColor() {
         int numberOfFloors = floorCollection.Count;
         for (int i = numberOfFloors - 1; i > 0; i--) {
@@ -866,10 +884,5 @@ public class ObjectPlacement : MonoBehaviour {
             bulkActive = false;
             resetBulkLine();
         }
-
     }
-
-
-    // time-start-of-run || algorithm || floorplan unique ID || cleaning PCT || vaccum running time || minutes left
-
 }
