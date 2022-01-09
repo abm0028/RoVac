@@ -1,11 +1,26 @@
-using System.Collections;
-using UnityEngine.UI;
 using TMPro;
+
+/* Unmerged change from project 'Assembly-CSharp.Player'
+Before:
+using UnityEngine.UI;
+After:
+using System.Collections.Generic;
+*/
+using UnityEngine;
+using 
+/* Unmerged change from project 'Assembly-CSharp.Player'
+Before:
 using System.Collections.Generic;
 using UnityEngine;
+After:
+using UnityEngine;
 using UnityEngine.SceneManagement;
+*/
+UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour {
+public class UIManager : MonoBehaviour
+{
     public Button chairButton, tableButton, chestButton, floorButton, wallButton, rovacButton, saveButton, loadButton, deleteButton, bulkButton, exitButton, stopButton, startButton, menuButton;
     public TMP_Dropdown chairDropdown, tableDropdown, speedDropdown, floorDropdown, algorithmDropdown, loadDropdown;
     public TMP_InputField IDField;
@@ -24,27 +39,32 @@ public class UIManager : MonoBehaviour {
     public GUIStyle secondaryButtonSkin;
 
     // handles are you sure you want to exit dialog box
-    void DialogWindow(int windowID) {
+    void DialogWindow(int windowID)
+    {
         float y = 20;
 
-        if (GUI.Button(new Rect(5, y, windowRect.width - 10, 20), "No", secondaryButtonSkin)) {
+        if (GUI.Button(new Rect(5, y, windowRect.width - 10, 20), "No", secondaryButtonSkin))
+        {
             show = false;
         }
 
-        if (GUI.Button(new Rect(5, y + 30, windowRect.width - 10, 20), "Yes", primaryButtonSkin)) {
+        if (GUI.Button(new Rect(5, y + 30, windowRect.width - 10, 20), "Yes", primaryButtonSkin))
+        {
             Application.Quit();
             show = false;
         }
     }
 
-    void OnGUI() {
+    void OnGUI()
+    {
         if (show)
             windowRect = GUI.Window(0, windowRect, DialogWindow, "You sure you want to exit?");
     }
 
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
 
         chairButton.GetComponent<Button>().onClick.AddListener(chairAction);
         tableButton.GetComponent<Button>().onClick.AddListener(tableAction);
@@ -59,7 +79,8 @@ public class UIManager : MonoBehaviour {
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
 
-        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate
+        {
             SpeedValueChanged(speedDropdown);
         });
 
@@ -67,7 +88,8 @@ public class UIManager : MonoBehaviour {
 
     }
 
-    public void hideUI() {
+    public void hideUI()
+    {
         chairButton.gameObject.SetActive(false);
         tableButton.gameObject.SetActive(false);
         chestButton.gameObject.SetActive(false);
@@ -94,7 +116,8 @@ public class UIManager : MonoBehaviour {
         this.gameObject.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    public void showUI() {
+    public void showUI()
+    {
         chairButton.gameObject.SetActive(true);
         tableButton.gameObject.SetActive(true);
         chestButton.gameObject.SetActive(true);
@@ -120,74 +143,92 @@ public class UIManager : MonoBehaviour {
         this.gameObject.GetComponent<Image>().color = new Color(0.247f, 0.247f, 0.247f, 1.0f);
     }
 
-    public void stopAction() {
-        if (hasStarted) {
+    public void stopAction()
+    {
+        if (hasStarted)
+        {
             hasStarted = false;
             showUI();
         }
 
     }
 
-    void startAction() {
+    void startAction()
+    {
         int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
 
-        if (floorcount >= 200 && floorcount <= 8000) {
+        if (floorcount >= 200 && floorcount <= 8000)
+        {
             hasStarted = true;
             hideUI();
         }
     }
 
-    void exitAction() {
+    void exitAction()
+    {
         show = true;
     }
 
-    void menuAction() {
+    void menuAction()
+    {
         SceneManager.LoadScene(sceneName: "MenuScene");
     }
 
-    void chairAction() {
+    void chairAction()
+    {
         inactiveColor();
         chairButton.GetComponent<Image>().color = Color.green;
     }
 
-    void tableAction() {
+    void tableAction()
+    {
         inactiveColor();
         tableButton.GetComponent<Image>().color = Color.green;
     }
 
-    void chestAction() {
+    void chestAction()
+    {
         inactiveColor();
         chestButton.GetComponent<Image>().color = Color.green;
     }
 
-    void floorAction() {
+    void floorAction()
+    {
         inactiveColor();
         floorButton.GetComponent<Image>().color = Color.green;
     }
 
-    void wallAction() {
+    void wallAction()
+    {
         inactiveColor();
         wallButton.GetComponent<Image>().color = Color.green;
     }
 
-    void rovacAction() {
+    void rovacAction()
+    {
         inactiveColor();
         rovacButton.GetComponent<Image>().color = Color.green;
     }
 
-    void deleteAction() {
+    void deleteAction()
+    {
         inactiveColor();
-        if (bulkActive) {
+        if (bulkActive)
+        {
             bulkActive = false;
         }
         bulkButton.GetComponent<Image>().color = Color.white;
         deleteButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.red, 0.5f);
     }
-    void bulkAction() {
-        if (bulkActive) {
+    void bulkAction()
+    {
+        if (bulkActive)
+        {
             bulkActive = false;
             bulkButton.GetComponent<Image>().color = Color.white;
-        } else {
+        }
+        else
+        {
             bulkActive = true;
             bulkButton.GetComponent<Image>().color = Color.Lerp(Color.white, Color.yellow, 0.5f);
         }
@@ -195,7 +236,8 @@ public class UIManager : MonoBehaviour {
         deleteButton.GetComponent<Image>().color = Color.white;
     }
 
-    void inactiveColor() {
+    void inactiveColor()
+    {
         chairButton.GetComponent<Image>().color = Color.white;
         tableButton.GetComponent<Image>().color = Color.white;
         chestButton.GetComponent<Image>().color = Color.white;
@@ -206,14 +248,17 @@ public class UIManager : MonoBehaviour {
     }
 
     // handles the change in floor dropdown 
-    void SpeedValueChanged(TMP_Dropdown change) {
+    void SpeedValueChanged(TMP_Dropdown change)
+    {
         int speedChoice = change.value;
         switchSimulationSpeed(speedChoice);
     }
 
     // Will change the speed of the simulation when selected by the user
-    void switchSimulationSpeed(int choice) {
-        switch (choice) {
+    void switchSimulationSpeed(int choice)
+    {
+        switch (choice)
+        {
             case 0:
                 simSpeed = 1;
                 break;
@@ -228,7 +273,8 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    public int getSimSpeed() {
+    public int getSimSpeed()
+    {
         return simSpeed;
     }
 }

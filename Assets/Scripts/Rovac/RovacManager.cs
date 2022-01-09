@@ -6,15 +6,23 @@
  * Date Created:   11/02/21
  */
 
+
+/* Unmerged change from project 'Assembly-CSharp.Player'
+Before:
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
+After:
 using System;
+using System.Collections;
+*/
+using System;
+using System.Collections.Generic;
 using System.IO;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class RovacManager : MonoBehaviour {
+public class RovacManager : MonoBehaviour
+{
 
     // GUI Elements
     public TMP_Dropdown algorithmDropdown, speedDropdown, floorDropdown;
@@ -79,17 +87,22 @@ public class RovacManager : MonoBehaviour {
     string IDName = "ID";
 
     // sets path
-    string setPath(string path) {
-        if (Application.isEditor) {
+    string setPath(string path)
+    {
+        if (Application.isEditor)
+        {
             return $@"Assets/Resources/{path}";
-        } else {
+        }
+        else
+        {
             return $"{Application.dataPath}/StreamingAssets/{path}";
         }
     }
 
     // Start is called before the first frame update
     // Will be used to get the rigid body of the roVac, and handle changing the variable values for simulation speed and pathing algorithm from reading GUI selections 
-    void Start() {
+    void Start()
+    {
 
         path = setPath("records.csv");
         rovacPosition = transform.position;
@@ -99,11 +112,13 @@ public class RovacManager : MonoBehaviour {
         startButton.GetComponent<Button>().onClick.AddListener(startAction);
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
 
-        algorithmDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+        algorithmDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate
+        {
             AlgorithmValueChanged(algorithmDropdown);
         });
 
-        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate
+        {
             SpeedValueChanged(speedDropdown);
         });
 
@@ -117,24 +132,30 @@ public class RovacManager : MonoBehaviour {
 
     // Update is called once per frame
     // Will be used to check the raycast collisions when the random algorithm is active
-    void Update() {
-        if (hasStarted) {
+    void Update()
+    {
+        if (hasStarted)
+        {
             // Raycast for random algorithm
-            if (randomActive) {
+            if (randomActive)
+            {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
                 // rotates the rovac a random directions
-                if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall") {
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall")
+                {
                     float randRotation = transform.rotation.y;
                     transform.Rotate(0, randomTurn(randRotation), 0);
                 }
             }
 
-            if (spiralActive) {
+            if (spiralActive)
+            {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
                 // spirals the rovac
-                if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall") {
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && hitInfo.transform.tag == "Wall")
+                {
                     float randRotation = transform.rotation.y;
                     transform.Rotate(0, randomTurn(randRotation), 0);
                     frameSpiralCounter = 0;
@@ -143,22 +164,26 @@ public class RovacManager : MonoBehaviour {
                 }
             }
 
-            if (snakingActive) {
+            if (snakingActive)
+            {
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
-                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest"))
+                {
                     float currentFacing = transform.rotation.y;
                     transform.Rotate(0, snakingTurn(currentFacing), 0);
                 }
             }
 
-            if (wallfollowActive) {
+            if (wallfollowActive)
+            {
 
                 Ray ray = new Ray(transform.position, transform.forward);
                 RaycastHit hitInfo;
                 float angle = UnityEngine.Random.Range(-1, 1) * 45;
 
-                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest")) {
+                if (Physics.Raycast(ray, out hitInfo, raycastLength) && (hitInfo.transform.tag == "Wall" || hitInfo.transform.tag == "Chest"))
+                {
                     transform.Rotate(0, angle, 0);
                 }
             }
@@ -167,31 +192,41 @@ public class RovacManager : MonoBehaviour {
 
     // FixedUpdate is called once per frame
     // Will be used to change the algorithm that will be run
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
 
-        if (hasStarted) {
-            if (spiralActive) {
-                if (cooldown) {
+        if (hasStarted)
+        {
+            if (spiralActive)
+            {
+                if (cooldown)
+                {
                     randomAlgo();
-                    if (cooldownCounter == cooldownGoal) {
+                    if (cooldownCounter == cooldownGoal)
+                    {
                         cooldown = false;
                         cooldownCounter = 0;
                     }
                     cooldownCounter++;
-                } else {
+                }
+                else
+                {
                     spiralAlgo();
                 }
             }
 
-            if (randomActive) {
+            if (randomActive)
+            {
                 randomAlgo();
             }
 
-            if (snakingActive) {
+            if (snakingActive)
+            {
                 snakingAlgo();
             }
 
-            if (wallfollowActive) {
+            if (wallfollowActive)
+            {
                 wallfollowAlgo();
             }
 
@@ -202,13 +237,15 @@ public class RovacManager : MonoBehaviour {
     }
 
     // updates clean percentage text
-    void updateCleanText() {
+    void updateCleanText()
+    {
         float cleanPct = cameraobj.GetComponent<ObjectPlacement>().getAverages();
         cleaningText.text = $"Cleaning: {convertToPercentage(cleanPct)}";
     }
 
     // Will reset all algorithm bools to prepare for changing the algorithm
-    void resetActive() {
+    void resetActive()
+    {
         snakingActive = false;
         wallfollowActive = false;
         spiralActive = false;
@@ -218,59 +255,74 @@ public class RovacManager : MonoBehaviour {
     /*------------------------------------------ Random Algo ------------------------------------------*/
 
     // Random Algorithm and instructions for object collision
-    void randomAlgo() {
+    void randomAlgo()
+    {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
     }
 
     // Will handle the turning of the roVac when the random algorithm is active
-    float randomTurn(float currentRotation) {
+    float randomTurn(float currentRotation)
+    {
 
         float start = currentRotation + 180;
         int angle = UnityEngine.Random.Range(20, 45);
         int choice = UnityEngine.Random.Range(1, 3);
 
-        if (choice == 1) {
+        if (choice == 1)
+        {
             return start + angle;
-        } else {
+        }
+        else
+        {
             return start - angle;
         }
     }
 
     // Changes the angle of trajectory of the roVac after collision with an object based on unit circle calculations
-    float normalizeDegree(float degree) {
+    float normalizeDegree(float degree)
+    {
 
-        if (degree > 360) {
+        if (degree > 360)
+        {
             return degree - 360;
-        } else {
+        }
+        else
+        {
             return degree;
         }
     }
 
     /*------------------------------------------ Snaking Algo -----------------------------------------*/
 
-    void snakingAlgo() {
+    void snakingAlgo()
+    {
         rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
     }
 
     // snaking algorithm turn manager
-    float snakingTurn(float currentRotation) {
+    float snakingTurn(float currentRotation)
+    {
         return currentRotation + 190;
     }
 
     /*---------------------------------------- Wall-Follow Algo ---------------------------------------*/
 
-    void wallfollowAlgo() {
+    void wallfollowAlgo()
+    {
         rb.velocity = transform.forward * Time.fixedDeltaTime * vaccumSpeed;
     }
 
     /*------------------------------------------ Sprial Algo ------------------------------------------*/
 
     // Manages the speed and intervals of the spirals
-    void spiralSpeedManager(ref int goal, ref int incrementStep) {
-        if (frameSpiralCounter == goal) {
+    void spiralSpeedManager(ref int goal, ref int incrementStep)
+    {
+        if (frameSpiralCounter == goal)
+        {
             transform.Rotate(0, 90, 00);
             frameSpiralCounter = 0;
-            if (turnIndex == turnGoal) {
+            if (turnIndex == turnGoal)
+            {
                 goal += incrementStep;
                 turnIndex = 0;
             }
@@ -280,11 +332,13 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Manages the spiral algorithm turn
-    void spiralAlgo() {
+    void spiralAlgo()
+    {
 
         rb.velocity = transform.forward * Time.deltaTime * vaccumSpeed;
 
-        switch (simulationSpeed) {
+        switch (simulationSpeed)
+        {
             case 1:
                 spiralSpeedManager(ref framegoal_1x, ref incrementStep_1x);
                 break;
@@ -302,55 +356,67 @@ public class RovacManager : MonoBehaviour {
     /*------------------------------------------ Time managment ------------------------------------------*/
 
     // manages the time and resets time after each algo completes
-    void timeManager() {
+    void timeManager()
+    {
         timeFrameCounter = timeFrameCounter + frameInterval;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
-        if (timeFrameCounter >= timeGoal) {
+        if (timeFrameCounter >= timeGoal)
+        {
             panel.GetComponent<UIManager>().stopAction();
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             finishAction();
-            if (allActive) {
+            if (allActive)
+            {
                 resetFloorsAllAlgo();
-            } else {
+            }
+            else
+            {
                 resetFloors();
             }
         }
     }
 
     // gets minutes from seconds
-    string getMinutes(int frames) {
+    string getMinutes(int frames)
+    {
         float seconds = frames / 50;
         float minutes = (int)seconds / 60;
         return $"{150 - (int)minutes}";
     }
 
     // resets the floors
-    void resetFloors() {
+    void resetFloors()
+    {
         List<GameObject> tempFloor = cameraobj.GetComponent<ObjectPlacement>().floorCollection;
-        foreach (GameObject floor in tempFloor) {
+        foreach (GameObject floor in tempFloor)
+        {
             floor.GetComponent<Cleaning>().stopAction();
         }
     }
 
     // resets the floors for all algorithm
     // difference is is starts listening for the rovac immediately after resetting the floors
-    void resetFloorsAllAlgo() {
+    void resetFloorsAllAlgo()
+    {
         List<GameObject> tempFloor = cameraobj.GetComponent<ObjectPlacement>().floorCollection;
-        foreach (GameObject floor in tempFloor) {
+        foreach (GameObject floor in tempFloor)
+        {
             floor.GetComponent<Cleaning>().stopActionAllAlgo();
         }
     }
 
     // spiral reset
-    void resetSpiralTimers() {
+    void resetSpiralTimers()
+    {
         framegoal_1x = framegoal_1xStartingPoint;
         framegoal_50x = framegoal_50xStartingPoint;
         framegoal_100x = framegoal_100xStartingPoint;
     }
 
     // snaking reset
-    void resetSnakingTimers() {
+    void resetSnakingTimers()
+    {
         framegoal_1x = framegoal_1xStartingPoint;
         framegoal_50x = framegoal_50xStartingPoint;
         framegoal_100x = framegoal_100xStartingPoint;
@@ -359,22 +425,29 @@ public class RovacManager : MonoBehaviour {
     /*----------------------------------------- Data Recording -----------------------------------------*/
 
     // records data to csv
-    void recordData() {
+    void recordData()
+    {
         createFile();
         appendToFile();
     }
 
     // creates the file new file if does not exist
-    void createFile() {
+    void createFile()
+    {
 
-        if (File.Exists(path)) {
+        if (File.Exists(path))
+        {
             return;
-        } else {
-            using (StreamWriter sw = File.CreateText(path)) {
+        }
+        else
+        {
+            using (StreamWriter sw = File.CreateText(path))
+            {
                 sw.Close();
             }
 
-            using (StreamWriter sw = File.AppendText(path)) {
+            using (StreamWriter sw = File.AppendText(path))
+            {
                 String output = $"Date, Algorithm, Algorithm Version, ID, Cleaning Pct, Time remaining";
                 sw.WriteLine(output);
                 sw.Close();
@@ -384,14 +457,17 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Convert float to percentage
-    string convertToPercentage(float value) {
+    string convertToPercentage(float value)
+    {
         double rounded = Math.Round(value, 2);
         return $"{rounded * 100}%";
     }
 
     // appends run to the next line of the records.csv file
-    void appendToFile() {
-        using (StreamWriter sw = File.AppendText(path)) {
+    void appendToFile()
+    {
+        using (StreamWriter sw = File.AppendText(path))
+        {
             String humanDate = DateTime.Now.ToString("MM-dd-yyyy HH:mm:ss");
             String minutes = getMinutes(timeFrameCounter);
             float average = cameraobj.GetComponent<ObjectPlacement>().getAverages();
@@ -403,22 +479,26 @@ public class RovacManager : MonoBehaviour {
     }
 
     // handles input from run ID input field
-    void inputAction(string value) {
+    void inputAction(string value)
+    {
         // To get the text
         IDName = value;
     }
 
     /*---------------------------------------------- Buttons ----------------------------------------------*/
     // starts the simulation
-    void startAction() {
+    void startAction()
+    {
         int floorcount = cameraobj.GetComponent<ObjectPlacement>().getFloorCount();
-        if (floorcount >= 200 && floorcount <= 8000) {
+        if (floorcount >= 200 && floorcount <= 8000)
+        {
             hasStarted = true;
         }
     }
 
     // runs on finish of simulation
-    void finishAction() {
+    void finishAction()
+    {
         panel.GetComponent<UIManager>().showUI();
         hasStarted = false;
         transform.position = rovacPosition;
@@ -427,13 +507,16 @@ public class RovacManager : MonoBehaviour {
         rb.angularVelocity = Vector3.zero;
         batteryText.text = $"Battery Remaining: {getMinutes(timeFrameCounter)} minutes";
         cleaningText.text = $"Cleaning: 0%";
-        if (allActive == false) {
+        if (allActive == false)
+        {
             timeFrameCounter = 0;
             recordData();
         }
 
-        if (allActive == true) {
-            if (snakingActive == true) {
+        if (allActive == true)
+        {
+            if (snakingActive == true)
+            {
                 selectedAlgorithm = "Snaking";
                 recordData();
                 timeFrameCounter = 0;
@@ -441,7 +524,9 @@ public class RovacManager : MonoBehaviour {
                 wallfollowActive = true;
                 startAction();
                 panel.GetComponent<UIManager>().hideUI();
-            } else if (wallfollowActive == true) {
+            }
+            else if (wallfollowActive == true)
+            {
                 selectedAlgorithm = "Wall-follow";
                 recordData();
                 timeFrameCounter = 0;
@@ -449,7 +534,9 @@ public class RovacManager : MonoBehaviour {
                 spiralActive = true;
                 startAction();
                 panel.GetComponent<UIManager>().hideUI();
-            } else if (spiralActive == true) {
+            }
+            else if (spiralActive == true)
+            {
                 selectedAlgorithm = "Spiral";
                 recordData();
                 timeFrameCounter = 0;
@@ -457,7 +544,9 @@ public class RovacManager : MonoBehaviour {
                 randomActive = true;
                 startAction();
                 panel.GetComponent<UIManager>().hideUI();
-            } else if (randomActive == true) {
+            }
+            else if (randomActive == true)
+            {
                 selectedAlgorithm = "Random";
                 recordData();
                 timeFrameCounter = 0;
@@ -467,7 +556,8 @@ public class RovacManager : MonoBehaviour {
     }
 
     // runs if user mannually stops the simulation
-    void stopAction() {
+    void stopAction()
+    {
         panel.GetComponent<UIManager>().showUI();
         recordData();
         hasStarted = false;
@@ -481,8 +571,10 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Will read the integer value denoting the seleted algorithm and changed it base on that
-    void switchAlgorithims(int choice) {
-        switch (choice) {
+    void switchAlgorithims(int choice)
+    {
+        switch (choice)
+        {
             case 0:
                 resetActive();
                 selectedAlgorithm = "All";
@@ -520,9 +612,11 @@ public class RovacManager : MonoBehaviour {
     }
 
     // Will change the vacuum speed based on the simulation speed selected
-    void switchSimulationSpeed(int choice) {
+    void switchSimulationSpeed(int choice)
+    {
 
-        switch (choice) {
+        switch (choice)
+        {
             case 0:
                 simulationSpeed = 1;
                 vaccumSpeed = baseSpeed * simulationSpeed;
@@ -547,13 +641,15 @@ public class RovacManager : MonoBehaviour {
     }
 
     // handles algorithm selection change
-    void AlgorithmValueChanged(TMP_Dropdown change) {
+    void AlgorithmValueChanged(TMP_Dropdown change)
+    {
         algorithmChoice = change.value;
         switchAlgorithims(algorithmChoice);
     }
 
     // handles speed selection change
-    void SpeedValueChanged(TMP_Dropdown change) {
+    void SpeedValueChanged(TMP_Dropdown change)
+    {
         int speedChoice = change.value;
         switchSimulationSpeed(speedChoice);
     }

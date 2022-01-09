@@ -6,13 +6,21 @@
  * Date Created:   11/08/21
  */
 
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
+using 
+/* Unmerged change from project 'Assembly-CSharp.Player'
+Before:
 using UnityEngine;
 using TMPro;
+After:
+using TMPro;
+using UnityEngine;
+*/
+UnityEngine;
 using UnityEngine.UI;
 
-public class Cleaning : MonoBehaviour {
+public class Cleaning : MonoBehaviour
+{
 
     // Declaration and initialization of color values for the floor tiles, and roVac cleaning speed
     int startingPoints = 10000;
@@ -41,7 +49,8 @@ public class Cleaning : MonoBehaviour {
 
     // Start is called before the first frame update
     // Will set the color properties of the floor tiles at the start of the program
-    void Start() {
+    void Start()
+    {
         // sets the cleaning points to the starting points 
         cleaningPoints = startingPointsBase;
         // sets the cleaningreduction rate
@@ -54,16 +63,20 @@ public class Cleaning : MonoBehaviour {
         stopButton.GetComponent<Button>().onClick.AddListener(stopAction);
 
         // sets listeners to the  for the speed dropdown and floor dropdown
-        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+        speedDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate
+        {
             SpeedValueChanged(speedDropdown);
         });
-        floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate {
+        floorDropdown.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(delegate
+        {
             FloorValueChanged(floorDropdown);
         });
     }
 
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.P)) {
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
             //Debug.Log($"CleaningPoints: {cleaningPoints}");
             //Debug.Log($"CleaningReduction: {cleaningReductionInner}");
             //Debug.Log($"Sim Speed: {simulationSpeed}");
@@ -71,13 +84,16 @@ public class Cleaning : MonoBehaviour {
     }
 
     // Will handle the changing of the floor color according to collision with the roVac
-    void OnTriggerStay(Collider collision) {
+    void OnTriggerStay(Collider collision)
+    {
 
         // if statement to check if the roVac sim has started
-        if (hasStarted) {
+        if (hasStarted)
+        {
 
             // checks to see if cleaning tile touches the vaccum object
-            if (collision.gameObject.tag == "Vaccum") {
+            if (collision.gameObject.tag == "Vaccum")
+            {
                 // reduces the cleaning points by the math we did below
                 if (cleaningPoints > 0)
                     cleaningPoints = cleaningPoints - cleaningReductionInner;
@@ -88,7 +104,8 @@ public class Cleaning : MonoBehaviour {
 
                 gameObject.GetComponent<Renderer>().material.color = getNewColor();
             }
-            if (collision.gameObject.tag == "OuterVac") {
+            if (collision.gameObject.tag == "OuterVac")
+            {
                 // reduces the cleaning points by the math we did below
                 if (cleaningPoints > 0)
                     cleaningPoints = cleaningPoints - cleaningReductionOuter;
@@ -105,19 +122,23 @@ public class Cleaning : MonoBehaviour {
 
     // Will be used to find the percentage of the floor that was cleaned
     // called from other classes for data retreival
-    public float getPercentage() {
+    public float getPercentage()
+    {
         return Mathf.Abs((float)cleaningPoints / (float)startingPoints);
     }
 
     // takes the color between two colors depending on the percentage of the floor that was cleaned
-    Color getNewColor() {
+    Color getNewColor()
+    {
         return Color.Lerp(Color.white, currentColor, getPercentage());
     }
 
     // Will change the speed of the simulation when selected by the user
-    void switchSimulationSpeed(int choice) {
+    void switchSimulationSpeed(int choice)
+    {
 
-        switch (choice) {
+        switch (choice)
+        {
             case 0:
                 cleanBaseRateInner = 50;
                 cleanBaseRateOuter = 35;
@@ -144,8 +165,10 @@ public class Cleaning : MonoBehaviour {
     }
 
     // handles the multiplier for the floor tiles
-    void switchFloorSettings(int choice) {
-        switch (choice) {
+    void switchFloorSettings(int choice)
+    {
+        switch (choice)
+        {
             case 0:
                 floorLevelMultiplier = 1f;
                 currentColor = new Color(0.36f, 0.25f, 0.2f);
@@ -174,18 +197,21 @@ public class Cleaning : MonoBehaviour {
     }
 
     // handles the change in floor dropdown 
-    void SpeedValueChanged(TMP_Dropdown change) {
+    void SpeedValueChanged(TMP_Dropdown change)
+    {
         int speedChoice = change.value;
         switchSimulationSpeed(speedChoice);
     }
 
     // handles the change in floor dropdown 
-    void FloorValueChanged(TMP_Dropdown change) {
+    void FloorValueChanged(TMP_Dropdown change)
+    {
         switchFloorSettings(change.value);
     }
 
     // handles the start button press
-    void startAction() {
+    void startAction()
+    {
 
         //Debug.Log($"Pre StartingPoints: {startingPoints}");
         int simSpeed = panel.GetComponent<UIManager>().getSimSpeed();
@@ -201,14 +227,16 @@ public class Cleaning : MonoBehaviour {
     // resets the floor tiles to the default color and original value
     // gets triggered when the stop button is pressed and/or when the similation is over
     // it is called from other classes so we made it public
-    public void stopAction() {
+    public void stopAction()
+    {
         hasStarted = false;
         cleaningPoints = startingPoints;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
 
     // resets the floor tiles to the default color and original value and restarts the listening for rovac 
-    public void stopActionAllAlgo() {
+    public void stopActionAllAlgo()
+    {
         hasStarted = false;
         cleaningPoints = startingPoints;
         gameObject.GetComponent<Renderer>().material.color = currentColor;
